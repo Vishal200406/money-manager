@@ -2,90 +2,129 @@ import { Response } from "express";
 
 import Transaction from "../models/Transaction";
 
-import { AuthRequest } from "../middleware/authMiddleware";
+import {
+  AuthRequest
+} from "../middleware/authMiddleware";
 
 
-// Create a new transaction
+// Create transaction
 export const createTransaction = async (
   req: AuthRequest,
   res: Response
 ) => {
+
   try {
+
     const userId = req.user?.id;
 
+
     if (!userId) {
+
       return res.status(401).json({
-        message: "User not authenticated",
+
+        message:
+          "User not authenticated",
+
       });
+
     }
 
-    const {
-      type,
-      amount,
-      currency,
-      categoryId,
-      description,
-      date,
-    } = req.body;
+
+    const transaction =
+      await Transaction.create({
+
+        userId,
+
+        ...req.body,
+
+      });
 
 
-    const transaction = await Transaction.create({
-      userId,
-      type,
-      amount,
-      currency,
-      categoryId,
-      description,
-      date,
-    });
+
+    const populatedTransaction =
+      await Transaction.findById(
+        transaction._id
+      )
+      .populate(
+        "categoryId",
+        "name icon"
+      );
+
 
 
     return res.status(201).json({
-      message: "Transaction created successfully",
-      transaction,
+
+      message:
+        "Transaction created successfully",
+
+      transaction:
+        populatedTransaction,
+
     });
+
 
 
   } catch (error) {
 
     console.error(error);
 
+
     return res.status(500).json({
-      message: "Failed to create transaction",
+
+      message:
+        "Failed to create transaction",
+
     });
 
   }
+
 };
 
 
 
-// Get all transactions for logged-in user
+
+
+// Get all transactions
 export const getTransactions = async (
   req: AuthRequest,
   res: Response
 ) => {
+
   try {
 
-    const userId = req.user?.id;
+    const userId =
+      req.user?.id;
 
 
     if (!userId) {
+
       return res.status(401).json({
-        message: "User not authenticated",
+
+        message:
+          "User not authenticated",
+
       });
+
     }
 
 
-    const transactions = await Transaction.find({
-      userId,
-    })
+
+    const transactions =
+      await Transaction.find({
+
+        userId,
+
+      })
       .populate(
         "categoryId",
         "name icon"
       )
       .sort({
-        date: -1,
+
+        date:-1,
+
       });
+
 
 
     return res.status(200).json(
@@ -93,134 +132,23 @@ export const getTransactions = async (
     );
 
 
-  } catch (error) {
+  } catch(error) {
 
     console.error(error);
 
-    return res.status(500).json({
-      message: "Failed to fetch transactions",
-    });
-
-  }
-};
-
-
-
-// Get a single transaction
-export const getTransactionById = async (
-  req: AuthRequest,
-  res: Response
-) => {
-  try {
-
-    const userId = req.user?.id;
-
-
-    if (!userId) {
-      return res.status(401).json({
-        message: "User not authenticated",
-      });
-    }
-
-
-    const transaction =
-      await Transaction.findOne({
-        _id: req.params.id,
-        userId,
-      })
-      .populate(
-        "categoryId",
-        "name icon"
-      );
-
-
-    if (!transaction) {
-      return res.status(404).json({
-        message: "Transaction not found",
-      });
-    }
-
-
-    return res.status(200).json(
-      transaction
-    );
-
-
-  } catch (error) {
-
-    console.error(error);
 
     return res.status(500).json({
-      message: "Failed to fetch transaction",
-    });
-
-  }
-};
-
-
-
-// Update transaction
-export const updateTransaction = async (
-  req: AuthRequest,
-  res: Response
-) => {
-  try {
-
-    const userId = req.user?.id;
-
-
-    if (!userId) {
-      return res.status(401).json({
-        message: "User not authenticated",
-      });
-    }
-
-
-    const transaction =
-      await Transaction.findOneAndUpdate(
-
-        {
-          _id: req.params.id,
-          userId,
-        },
-
-        req.body,
-
-        {
-          new: true,
-          runValidators: true,
-        }
-
-      );
-
-
-    if (!transaction) {
-      return res.status(404).json({
-        message: "Transaction not found",
-      });
-    }
-
-
-    return res.status(200).json({
 
       message:
-        "Transaction updated successfully",
+        "Failed to fetch transactions",
 
-      transaction,
-
-    });
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    return res.status(500).json({
-      message: "Failed to update transaction",
     });
 
   }
+
 };
+
+
 
 
 
@@ -229,22 +157,30 @@ export const deleteTransaction = async (
   req: AuthRequest,
   res: Response
 ) => {
+
   try {
 
-    const userId = req.user?.id;
+    const userId =
+      req.user?.id;
 
 
     if (!userId) {
+
       return res.status(401).json({
-        message: "User not authenticated",
+
+        message:
+          "User not authenticated",
+
       });
+
     }
+
 
 
     const transaction =
       await Transaction.findOneAndDelete({
 
-        _id: req.params.id,
+        _id:req.params.id,
 
         userId,
 
@@ -264,6 +200,7 @@ export const deleteTransaction = async (
     }
 
 
+
     return res.status(200).json({
 
       message:
@@ -272,9 +209,11 @@ export const deleteTransaction = async (
     });
 
 
-  } catch (error) {
+
+  } catch(error) {
 
     console.error(error);
+
 
     return res.status(500).json({
 
@@ -284,4 +223,5 @@ export const deleteTransaction = async (
     });
 
   }
+
 };

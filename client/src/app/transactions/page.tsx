@@ -15,6 +15,11 @@ deleteTransaction
 
 
 import {
+getCategories
+} from "@/lib/categoryApi";
+
+
+import {
 Transaction
 } from "@/types/transaction";
 
@@ -23,12 +28,21 @@ Transaction
 export default function TransactionsPage(){
 
 
-const [transactions,setTransactions]=
+const [transactions,setTransactions]
+=
 useState<Transaction[]>([]);
 
 
 
-const [form,setForm]=useState({
+const [categories,setCategories]
+=
+useState<any[]>([]);
+
+
+
+const [form,setForm]
+=
+useState({
 
 type:"expense",
 
@@ -43,27 +57,49 @@ new Date()
 .toISOString()
 .substring(0,10),
 
+categoryId:"",
+
 });
 
 
 
-const loadTransactions =
-async()=>{
 
-const data =
+
+const loadData = async()=>{
+
+
+const transactionData =
 await getTransactions();
 
-setTransactions(data);
+
+const categoryData =
+await getCategories();
+
+
+
+setTransactions(
+transactionData
+);
+
+
+setCategories(
+categoryData
+);
+
 
 };
 
 
 
+
+
 useEffect(()=>{
 
-loadTransactions();
+loadData();
 
 },[]);
+
+
 
 
 
@@ -77,6 +113,7 @@ e:React.FormEvent
 e.preventDefault();
 
 
+
 await createTransaction({
 
 ...form,
@@ -84,10 +121,8 @@ await createTransaction({
 amount:
 Number(form.amount),
 
-categoryId:
-"000000000000000000000000"
-
 });
+
 
 
 setForm({
@@ -105,29 +140,19 @@ new Date()
 .toISOString()
 .substring(0,10),
 
+categoryId:"",
+
 });
 
 
-loadTransactions();
+
+loadData();
+
+
 
 };
 
 
-
-
-const removeTransaction =
-async(
-id:string
-)=>{
-
-
-await deleteTransaction(id);
-
-
-loadTransactions();
-
-
-};
 
 
 
@@ -137,10 +162,7 @@ return (
 <div className="space-y-8">
 
 
-<h1 className="
-text-3xl
-font-bold
-">
+<h1 className="text-3xl font-bold">
 
 Transactions
 
@@ -148,34 +170,79 @@ Transactions
 
 
 
-<div className="
-bg-white
-border
-rounded-xl
-p-6
-">
-
-
-<h2 className="
-text-xl
-font-semibold
-mb-4
-">
-
-Add Transaction
-
-</h2>
-
+<div className="bg-white border rounded-xl p-6">
 
 
 <form
+
 onSubmit={handleSubmit}
-className="
-grid
-gap-4
-md:grid-cols-2
-"
+
+className="grid gap-4"
+
 >
+
+
+<select
+
+value={form.categoryId}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+categoryId:e.target.value
+
+})
+
+}
+
+className="border p-2 rounded"
+
+>
+
+
+<option value="">
+
+Select Category
+
+</option>
+
+
+
+{
+categories.map(
+
+(category)=>(
+
+<option
+
+key={category._id}
+
+value={category._id}
+
+>
+
+{category.icon}
+
+{" "}
+
+{category.name}
+
+</option>
+
+)
+
+)
+
+}
+
+
+</select>
+
+
+
 
 
 <select
@@ -194,11 +261,7 @@ type:e.target.value
 
 }
 
-className="
-border
-rounded
-p-2
-"
+className="border p-2 rounded"
 
 >
 
@@ -213,6 +276,7 @@ Income
 
 
 </select>
+
 
 
 
@@ -237,91 +301,7 @@ amount:e.target.value
 
 }
 
-className="
-border
-rounded
-p-2
-"
-
-/>
-
-
-
-
-<select
-
-value={form.currency}
-
-onChange={(e)=>
-
-setForm({
-
-...form,
-
-currency:e.target.value
-
-})
-
-}
-
-className="
-border
-rounded
-p-2
-"
-
->
-
-
-<option>
-USD
-</option>
-
-
-<option>
-CAD
-</option>
-
-
-<option>
-GBP
-</option>
-
-
-<option>
-INR
-</option>
-
-
-</select>
-
-
-
-
-
-<input
-
-type="date"
-
-value={form.date}
-
-onChange={(e)=>
-
-setForm({
-
-...form,
-
-date:e.target.value
-
-})
-
-}
-
-className="
-border
-rounded
-p-2
-"
+className="border p-2 rounded"
 
 />
 
@@ -347,29 +327,21 @@ description:e.target.value
 
 }
 
-className="
-border
-rounded
-p-2
-"
+className="border p-2 rounded"
 
 />
 
 
 
 
+
 <button
 
-className="
-bg-blue-600
-text-white
-rounded
-p-2
-"
+className="bg-blue-600 text-white p-2 rounded"
 
 >
 
-Save Transaction
+Save
 
 </button>
 
@@ -384,68 +356,15 @@ Save Transaction
 
 
 
-<div className="
-bg-white
-border
-rounded-xl
-p-6
-">
+<div className="bg-white border rounded-xl p-6">
 
 
-<h2 className="
-text-xl
-font-semibold
-mb-4
-">
+<h2 className="font-bold text-xl">
 
 History
 
 </h2>
 
-
-
-
-<table className="
-w-full
-">
-
-<thead>
-
-<tr
-className="
-border-b
-text-left
-"
->
-
-<th>
-Date
-</th>
-
-<th>
-Type
-</th>
-
-<th>
-Amount
-</th>
-
-<th>
-Description
-</th>
-
-<th>
-Action
-</th>
-
-
-</tr>
-
-</thead>
-
-
-
-<tbody>
 
 
 {
@@ -454,68 +373,52 @@ transactions.map(
 (transaction)=>(
 
 
-<tr
+<div
+
 key={transaction._id}
-className="
-border-b
-"
+
+className="border-b py-3 flex justify-between"
+
 >
 
 
-<td>
-{
-new Date(
-transaction.date
-)
-.toLocaleDateString()
-}
-</td>
+<div>
 
-
-<td>
-{
-transaction.type
-}
-</td>
-
-
-<td>
-{
-transaction.currency
-}
+{transaction.categoryId?.icon}
 
 {" "}
-{
-transaction.amount
-}
 
-</td>
+{transaction.categoryId?.name}
 
 
-<td>
-{
-transaction.description
-}
+<br/>
 
-</td>
+
+{transaction.description}
+
+
+</div>
 
 
 
-<td>
+<div>
+
+{transaction.currency}
+
+{" "}
+
+{transaction.amount}
+
+
+</div>
+
+
 
 <button
 
-onClick={()=>
+onClick={()=>deleteTransaction(transaction._id)}
 
-removeTransaction(
-transaction._id
-)
-
-}
-
-className="
-text-red-600
-"
+className="text-red-600"
 
 >
 
@@ -523,11 +426,9 @@ Delete
 
 </button>
 
-</td>
 
 
-
-</tr>
+</div>
 
 
 )
@@ -537,16 +438,7 @@ Delete
 }
 
 
-
-</tbody>
-
-
-</table>
-
-
-
 </div>
-
 
 
 </div>
