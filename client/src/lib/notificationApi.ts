@@ -1,17 +1,12 @@
 import api from "./api";
 
 
-export const getNotifications =
-async()=>{
-
+export const getNotifications = async()=>{
 
 const response =
 await api.get(
-
 "/notifications"
-
 );
-
 
 return response.data;
 
@@ -19,8 +14,7 @@ return response.data;
 
 
 
-export const markRead =
-async(
+export const deleteNotification = async(
 
 id:string
 
@@ -28,14 +22,14 @@ id:string
 
 
 const response =
-await api.patch(
+await api.delete(
 
 `/notifications/${id}`
 
 );
 
 
-
 return response.data;
+
 
 };
