@@ -2,38 +2,85 @@ import mongoose from "mongoose";
 import { env } from "./env";
 
 
-export const connectDatabase = async (): Promise<void> => {
+interface MongooseCache {
 
-  try {
+  conn: typeof mongoose | null;
 
+  promise:
+    Promise<typeof mongoose> | null;
 
-    console.log(
-      "Mongo URI loaded:",
-      Boolean(env.MONGODB_URI)
-    );
-
-
-    await mongoose.connect(
-      env.MONGODB_URI
-    );
+}
 
 
-    console.log(
-      "MongoDB connected successfully"
-    );
+
+declare global {
+
+  var mongooseCache: MongooseCache | undefined;
+
+}
 
 
-  } catch(error) {
+
+let cached =
+  global.mongooseCache;
 
 
-    console.error(
-      "MongoDB connection failed"
-    );
+
+if (!cached) {
+
+  cached = {
+
+    conn: null,
+
+    promise: null,
+
+  };
 
 
-    console.error(error);
+  global.mongooseCache = cached;
+
+}
+
+
+
+
+export const connectDatabase = async () => {
+
+
+  if (cached!.conn) {
+
+    return cached!.conn;
+
+  }
+
+
+
+  if (!cached!.promise) {
+
+
+    cached!.promise =
+      mongoose.connect(
+
+        env.MONGODB_URI
+
+      );
 
 
   }
+
+
+
+  cached!.conn =
+    await cached!.promise;
+
+
+
+  console.log(
+    "MongoDB connected successfully"
+  );
+
+
+  return cached!.conn;
+
 
 };
