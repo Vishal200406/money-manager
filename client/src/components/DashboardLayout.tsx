@@ -1,48 +1,186 @@
-import Sidebar from "./Sidebar";
+"use client";
 
-import Header from "./Header";
+
+import Link from "next/link";
+
+
+import {
+
+ReactNode
+
+}
+
+from "react";
+
+
+
+interface Props{
+
+children:ReactNode;
+
+}
+
 
 
 export default function DashboardLayout({
 
-children,
+children
 
-}:{
+}:Props){
 
-children:React.ReactNode;
 
-}){
+
+const links=[
+
+
+{
+name:"Dashboard",
+href:"/dashboard"
+},
+
+
+{
+name:"Transactions",
+href:"/transactions"
+},
+
+
+{
+name:"Budgets",
+href:"/budgets"
+},
+
+
+{
+name:"Reports",
+href:"/reports"
+},
+
+
+{
+name:"Goals",
+href:"/goals"
+},
+
+
+{
+name:"Recurring",
+href:"/recurring"
+},
+
+
+{
+name:"Notifications",
+href:"/notifications"
+},
+
+
+{
+name:"Settings",
+href:"/settings"
+}
+
+
+
+];
+
 
 
 return (
 
-<div
+<div className="min-h-screen bg-gray-100">
+
+
+<div className="flex">
+
+
+<aside
 
 className="
-flex
+hidden
+md:block
+w-64
+bg-white
+border-r
 min-h-screen
-bg-gray-50
+p-5
 "
 
 >
 
 
-<Sidebar/>
+<h1
 
-
-<div
 className="
-flex-1
+text-2xl
+font-bold
+mb-8
 "
+
+>
+
+Money Manager
+
+</h1>
+
+
+
+<nav
+
+className="
+space-y-3
+"
+
 >
 
 
-<Header/>
+{
+
+links.map(
+
+(link)=>(
+
+
+<Link
+
+key={link.href}
+
+href={link.href}
+
+className="
+block
+p-3
+rounded-lg
+hover:bg-gray-100
+transition
+"
+
+>
+
+{link.name}
+
+</Link>
+
+
+)
+
+)
+
+}
+
+
+</nav>
+
+
+</aside>
+
+
 
 
 <main
 
 className="
+flex-1
 p-6
 "
 
@@ -51,6 +189,7 @@ p-6
 {children}
 
 </main>
+
 
 
 </div>

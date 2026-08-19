@@ -2,25 +2,37 @@
 
 
 import {
-useEffect,
-useState
+  useEffect,
+  useState
 } from "react";
 
 
 import {
-createTransaction,
-getTransactions,
-deleteTransaction
+  createTransaction,
+  getTransactions,
+  deleteTransaction
 } from "@/lib/transactionApi";
 
 
 import {
-getCategories
+  getCategories
 } from "@/lib/categoryApi";
 
 
+import PageAnimation
+from "@/components/PageAnimation";
+
+
+import Card
+from "@/components/ui/Card";
+
+
+import Button
+from "@/components/ui/Button";
+
+
 import {
-Transaction
+  Transaction
 } from "@/types/transaction";
 
 
@@ -28,36 +40,46 @@ Transaction
 export default function TransactionsPage(){
 
 
-const [transactions,setTransactions]
-=
-useState<Transaction[]>([]);
+const [
+  transactions,
+  setTransactions
+] = useState<Transaction[]>([]);
 
 
 
-const [categories,setCategories]
-=
-useState<any[]>([]);
+const [
+  categories,
+  setCategories
+] = useState<any[]>([]);
 
 
 
-const [form,setForm]
-=
-useState({
+const [
+  loading,
+  setLoading
+] = useState(true);
 
-type:"expense",
 
-amount:"",
 
-currency:"USD",
+const [
+  form,
+  setForm
+] = useState({
 
-description:"",
+  type:"expense",
 
-date:
-new Date()
-.toISOString()
-.substring(0,10),
+  amount:"",
 
-categoryId:"",
+  currency:"USD",
+
+  description:"",
+
+  date:
+  new Date()
+  .toISOString()
+  .substring(0,10),
+
+  categoryId:"",
 
 });
 
@@ -65,26 +87,60 @@ categoryId:"",
 
 
 
-const loadData = async()=>{
+const loadData =
+async()=>{
 
 
-const transactionData =
-await getTransactions();
+try{
 
 
-const categoryData =
-await getCategories();
+setLoading(true);
+
+
+
+const [
+  transactionData,
+  categoryData
+]
+=
+await Promise.all([
+
+  getTransactions(),
+
+  getCategories()
+
+]);
 
 
 
 setTransactions(
-transactionData
+  transactionData
 );
+
 
 
 setCategories(
-categoryData
+  categoryData
 );
+
+
+
+}
+
+catch(error){
+
+console.error(
+"Failed loading transactions",
+error
+);
+
+}
+
+finally{
+
+setLoading(false);
+
+}
 
 
 };
@@ -95,9 +151,12 @@ categoryData
 
 useEffect(()=>{
 
+
 loadData();
 
+
 },[]);
+
 
 
 
@@ -114,12 +173,30 @@ e.preventDefault();
 
 
 
+if(
+!form.amount ||
+!form.categoryId
+){
+
+alert(
+"Please select category and enter amount"
+);
+
+return;
+
+}
+
+
+
+try{
+
+
 await createTransaction({
 
 ...form,
 
 amount:
-Number(form.amount),
+Number(form.amount)
 
 });
 
@@ -150,6 +227,56 @@ loadData();
 
 
 
+}
+
+catch(error){
+
+console.error(
+"Failed creating transaction",
+error
+);
+
+}
+
+
+};
+
+
+
+
+
+
+
+
+const removeTransaction =
+async(
+id:string
+)=>{
+
+
+try{
+
+
+await deleteTransaction(id);
+
+
+loadData();
+
+
+
+}
+
+catch(error){
+
+console.error(
+"Failed deleting transaction",
+error
+);
+
+
+}
+
+
 };
 
 
@@ -159,89 +286,68 @@ loadData();
 
 return (
 
+<PageAnimation>
+
+
 <div className="space-y-8">
 
 
-<h1 className="text-3xl font-bold">
+
+<div>
+
+<h1 className="
+text-3xl
+font-bold
+">
 
 Transactions
 
 </h1>
 
 
+<p className="
+text-gray-500
+mt-2
+">
 
-<div className="bg-white border rounded-xl p-6">
+Track your income and expenses.
+
+</p>
+
+
+</div>
+
+
+
+
+
+<Card>
+
+
+<h2 className="
+text-xl
+font-semibold
+mb-5
+">
+
+Add Transaction
+
+</h2>
+
+
 
 
 <form
 
 onSubmit={handleSubmit}
 
-className="grid gap-4"
+className="
+grid
+gap-4
+md:grid-cols-2
+"
 
 >
-
-
-<select
-
-value={form.categoryId}
-
-onChange={(e)=>
-
-setForm({
-
-...form,
-
-categoryId:e.target.value
-
-})
-
-}
-
-className="border p-2 rounded"
-
->
-
-
-<option value="">
-
-Select Category
-
-</option>
-
-
-
-{
-categories.map(
-
-(category)=>(
-
-<option
-
-key={category._id}
-
-value={category._id}
-
->
-
-{category.icon}
-
-{" "}
-
-{category.name}
-
-</option>
-
-)
-
-)
-
-}
-
-
-</select>
-
-
 
 
 
@@ -261,21 +367,104 @@ type:e.target.value
 
 }
 
-className="border p-2 rounded"
+className="
+border
+rounded-lg
+p-3
+"
 
 >
 
 <option value="expense">
+
 Expense
+
 </option>
 
 
 <option value="income">
+
 Income
+
 </option>
 
 
 </select>
+
+
+
+
+
+
+
+<select
+
+value={form.categoryId}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+categoryId:e.target.value
+
+})
+
+}
+
+className="
+border
+rounded-lg
+p-3
+"
+
+>
+
+
+<option value="">
+
+Select Category
+
+</option>
+
+
+
+{
+
+categories.map(
+
+(category)=>(
+
+
+<option
+
+key={category._id}
+
+value={category._id}
+
+>
+
+{category.icon}
+
+{" "}
+
+{category.name}
+
+</option>
+
+
+)
+
+)
+
+}
+
+
+</select>
+
+
+
 
 
 
@@ -301,9 +490,108 @@ amount:e.target.value
 
 }
 
-className="border p-2 rounded"
+className="
+border
+rounded-lg
+p-3
+"
+
+ />
+
+
+
+
+
+
+
+
+<select
+
+value={form.currency}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+currency:e.target.value
+
+})
+
+}
+
+className="
+border
+rounded-lg
+p-3
+"
+
+>
+
+<option>
+
+USD
+
+</option>
+
+
+<option>
+
+CAD
+
+</option>
+
+
+<option>
+
+GBP
+
+</option>
+
+
+<option>
+
+INR
+
+</option>
+
+
+</select>
+
+
+
+
+
+
+
+<input
+
+type="date"
+
+value={form.date}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+date:e.target.value
+
+})
+
+}
+
+className="
+border
+rounded-lg
+p-3
+"
 
 />
+
+
 
 
 
@@ -327,7 +615,12 @@ description:e.target.value
 
 }
 
-className="border p-2 rounded"
+className="
+border
+rounded-lg
+p-3
+md:col-span-2
+"
 
 />
 
@@ -335,39 +628,125 @@ className="border p-2 rounded"
 
 
 
-<button
 
-className="bg-blue-600 text-white p-2 rounded"
 
->
+<Button>
 
-Save
+Save Transaction
 
-</button>
+</Button>
+
 
 
 
 </form>
 
 
-</div>
+</Card>
 
 
 
 
 
-<div className="bg-white border rounded-xl p-6">
 
 
-<h2 className="font-bold text-xl">
 
-History
+<Card>
+
+
+<h2 className="
+text-xl
+font-semibold
+mb-5
+">
+
+Transaction History
 
 </h2>
 
 
 
+
+
 {
+
+loading && (
+
+<p>
+
+Loading transactions...
+
+</p>
+
+)
+
+}
+
+
+
+
+
+{
+
+!loading &&
+transactions.length===0 && (
+
+
+<div className="
+text-center
+py-10
+text-gray-500
+">
+
+
+<div className="
+text-5xl
+">
+
+💰
+
+</div>
+
+
+<h3 className="
+text-xl
+font-bold
+mt-4
+">
+
+No transactions yet
+
+</h3>
+
+
+<p>
+
+Start tracking your income and expenses.
+
+</p>
+
+
+
+</div>
+
+
+)
+
+}
+
+
+
+
+
+
+
+<div className="
+space-y-4
+">
+
+
+{
+
 transactions.map(
 
 (transaction)=>(
@@ -377,54 +756,148 @@ transactions.map(
 
 key={transaction._id}
 
-className="border-b py-3 flex justify-between"
+className="
+border
+rounded-lg
+p-4
+flex
+justify-between
+items-center
+"
 
 >
 
 
+
 <div>
 
-{transaction.categoryId?.icon}
+
+<h3 className="
+font-semibold
+">
+
+{
+
+transaction.categoryId?.icon
+
+}
 
 {" "}
 
-{transaction.categoryId?.name}
+{
+
+transaction.categoryId?.name
+
+}
+
+</h3>
 
 
-<br/>
+<p className="
+text-gray-500
+">
+
+{
+
+transaction.description ||
+
+"No description"
+
+}
+
+</p>
 
 
-{transaction.description}
+<p className="
+text-sm
+">
+
+{
+
+new Date(
+transaction.date
+)
+.toLocaleDateString()
+
+}
+
+</p>
 
 
 </div>
 
 
 
-<div>
+
+
+
+
+<div className="
+text-right
+">
+
+
+<p className="
+font-bold
+text-lg
+">
+
+{
+
+transaction.type==="income"
+
+?
+
+"+"
+
+:
+
+"-"
+
+}
+
 
 {transaction.currency}
 
 {" "}
 
-{transaction.amount}
+{
 
+transaction.amount
 
-</div>
+}
+
+</p>
 
 
 
 <button
 
-onClick={()=>deleteTransaction(transaction._id)}
+onClick={()=>
 
-className="text-red-600"
+removeTransaction(
+transaction._id
+)
+
+}
+
+className="
+text-red-600
+text-sm
+mt-2
+"
 
 >
 
 Delete
 
 </button>
+
+
+
+</div>
+
+
 
 
 
@@ -441,8 +914,18 @@ Delete
 </div>
 
 
+
+
+</Card>
+
+
+
 </div>
 
+
+</PageAnimation>
+
 );
+
 
 }
