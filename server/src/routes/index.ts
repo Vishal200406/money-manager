@@ -17,6 +17,8 @@ import currencyRoutes from "./currencyRoutes";
 
 import recurringRoutes from "./recurringRoutes";
 
+import savingsGoalRoutes from "./savingsGoalRoutes";
+
 
 
 const router =
@@ -97,6 +99,13 @@ currencyRoutes
 router.use(
 "/recurring",
 recurringRoutes
+);
+
+
+
+router.use(
+"/goals",
+savingsGoalRoutes
 );
 
 
