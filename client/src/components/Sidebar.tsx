@@ -1,86 +1,95 @@
 "use client";
 
+
 import Link from "next/link";
 
 import {
-  LayoutDashboard,
-  Receipt,
-  Wallet,
-  ChartBar,
-  Target,
-  Settings,
-} from "lucide-react";
+usePathname
+} from "next/navigation";
 
 
-const menuItems = [
-
-{
-name:"Dashboard",
-href:"/dashboard",
-icon:LayoutDashboard,
-},
+import {
+navigation
+} from "@/config/navigation";
 
 
-{
-name:"Transactions",
-href:"/transactions",
-icon:Receipt,
-},
+import Avatar
+from "@/components/ui/Avatar";
 
-
-{
-name:"Budgets",
-href:"/budgets",
-icon:Wallet,
-},
-
-
-{
-name:"Reports",
-href:"/reports",
-icon:ChartBar,
-},
-
-
-{
-name:"Goals",
-href:"/goals",
-icon:Target,
-},
-
-
-{
-name:"Settings",
-href:"/settings",
-icon:Settings,
-},
-
-
-];
 
 
 export default function Sidebar(){
 
 
+const pathname =
+usePathname();
+
+
+
 return (
 
 <aside
+
 className="
-w-64
+hidden
+md:flex
+flex-col
+w-72
 min-h-screen
-border-r
 bg-white
+border-r
 p-6
 "
+
 >
 
 
-<h1
+{/* Logo */}
+
+<div
+
 className="
-text-2xl
-font-bold
-mb-8
+flex
+items-center
+gap-3
+mb-10
 "
+
+>
+
+
+<div
+
+className="
+w-12
+h-12
+rounded-xl
+bg-primary
+text-white
+flex
+items-center
+justify-center
+text-2xl
+"
+
+>
+
+💰
+
+</div>
+
+
+
+<div>
+
+
+<h1
+
+className="
+font-bold
+text-xl
+"
+
 >
 
 Money Manager
@@ -88,39 +97,106 @@ Money Manager
 </h1>
 
 
+<p
+
+className="
+text-xs
+text-gray-500
+"
+
+>
+
+Finance Dashboard
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+{/* Navigation */}
 
 <nav
+
 className="
-space-y-3
+space-y-2
+flex-1
 "
+
 >
 
 
 {
-menuItems.map(
-(item)=>
+
+navigation.map(
+
+(item)=>{
+
+
+const Icon =
+item.icon;
+
+
+
+const active =
+pathname === item.href;
+
+
+
+return (
 
 <Link
 
-key={item.name}
+key={item.href}
 
 href={item.href}
 
-className="
+className={`
+
 flex
+
 items-center
+
 gap-3
-rounded-lg
+
 px-4
+
 py-3
-hover:bg-gray-100
+
+rounded-xl
+
 transition
-"
+
+${
+
+active
+
+?
+
+"bg-primary text-white shadow-md"
+
+:
+
+"text-gray-600 hover:bg-gray-100"
+
+}
+
+`}
 
 >
 
 
-<item.icon size={20}/>
+<Icon
+
+size={20}
+
+/>
 
 
 <span>
@@ -132,14 +208,112 @@ transition
 
 </Link>
 
+);
+
+
+}
 
 )
 
 }
 
 
-
 </nav>
+
+
+
+
+
+
+{/* User */}
+
+<div
+
+className="
+border-t
+pt-5
+mt-5
+"
+
+>
+
+
+<div
+
+className="
+flex
+items-center
+gap-3
+mb-4
+"
+
+>
+
+
+<Avatar
+
+name="John Smith"
+
+/>
+
+
+<div>
+
+
+<p
+
+className="
+font-semibold
+"
+
+>
+
+John Smith
+
+</p>
+
+
+<p
+
+className="
+text-sm
+text-gray-500
+"
+
+>
+
+USD Account
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+<button
+
+className="
+w-full
+rounded-xl
+border
+py-2
+text-sm
+hover:bg-gray-100
+"
+
+>
+
+Logout
+
+</button>
+
+
+
+</div>
 
 
 

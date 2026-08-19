@@ -1,20 +1,17 @@
 "use client";
 
 
-import Link from "next/link";
-
-
 import {
-
 ReactNode
-
-}
-
-from "react";
+} from "react";
 
 
+import Sidebar
+from "@/components/Sidebar";
 
-interface Props{
+
+
+interface Props {
 
 children:ReactNode;
 
@@ -30,150 +27,20 @@ children
 
 
 
-const links=[
-
-
-{
-name:"Dashboard",
-href:"/dashboard"
-},
-
-
-{
-name:"Transactions",
-href:"/transactions"
-},
-
-
-{
-name:"Budgets",
-href:"/budgets"
-},
-
-
-{
-name:"Reports",
-href:"/reports"
-},
-
-
-{
-name:"Goals",
-href:"/goals"
-},
-
-
-{
-name:"Recurring",
-href:"/recurring"
-},
-
-
-{
-name:"Notifications",
-href:"/notifications"
-},
-
-
-{
-name:"Settings",
-href:"/settings"
-}
-
-
-
-];
-
-
-
 return (
 
-<div className="min-h-screen bg-gray-100">
-
-
-<div className="flex">
-
-
-<aside
+<div
 
 className="
-hidden
-md:block
-w-64
-bg-white
-border-r
 min-h-screen
-p-5
+bg-gray-50
+flex
 "
 
 >
 
 
-<h1
-
-className="
-text-2xl
-font-bold
-mb-8
-"
-
->
-
-Money Manager
-
-</h1>
-
-
-
-<nav
-
-className="
-space-y-3
-"
-
->
-
-
-{
-
-links.map(
-
-(link)=>(
-
-
-<Link
-
-key={link.href}
-
-href={link.href}
-
-className="
-block
-p-3
-rounded-lg
-hover:bg-gray-100
-transition
-"
-
->
-
-{link.name}
-
-</Link>
-
-
-)
-
-)
-
-}
-
-
-</nav>
-
-
-</aside>
-
+<Sidebar />
 
 
 
@@ -182,6 +49,7 @@ transition
 className="
 flex-1
 p-6
+overflow-hidden
 "
 
 >
@@ -190,9 +58,6 @@ p-6
 
 </main>
 
-
-
-</div>
 
 
 </div>
