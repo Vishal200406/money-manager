@@ -1,16 +1,42 @@
 import app from "./app";
-import { env } from "./config/env";
 import { connectDatabase } from "./config/database";
+import { env } from "./config/env";
 
 
-const startServer = async () => {
-  await connectDatabase();
+connectDatabase()
+.then(()=>{
 
-  app.listen(env.PORT, () => {
+console.log(
+"Database ready"
+);
+
+
+})
+.catch((error)=>{
+
+console.error(
+"Database connection failed",
+error
+);
+
+});
+
+
+
+if(process.env.NODE_ENV !== "production"){
+
+app.listen(
+  env.PORT,
+  ()=>{
+
     console.log(
       `Server running on http://localhost:${env.PORT}`
     );
-  });
-};
 
-startServer();
+  }
+);
+
+}
+
+
+export default app;
