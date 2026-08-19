@@ -13,6 +13,8 @@ import analyticsRoutes from "./analyticsRoutes";
 
 import reportRoutes from "./reportRoutes";
 
+import currencyRoutes from "./currencyRoutes";
+
 
 
 const router =
@@ -79,6 +81,13 @@ analyticsRoutes
 router.use(
 "/reports",
 reportRoutes
+);
+
+
+
+router.use(
+"/currency",
+currencyRoutes
 );
 
 
