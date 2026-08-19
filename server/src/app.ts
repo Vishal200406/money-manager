@@ -38,8 +38,20 @@ from "./middleware/errorMiddleware";
 
 
 
-const app =
-express();
+
+
+const app = express();
+
+
+
+// Required when running behind Vercel / proxy
+
+app.set(
+  "trust proxy",
+  1
+);
+
+
 
 
 
@@ -51,11 +63,14 @@ helmet()
 
 
 
+
+
 app.use(
 
 cors({
 
 origin:
+
 env.CLIENT_URL,
 
 credentials:true,
@@ -63,6 +78,8 @@ credentials:true,
 })
 
 );
+
+
 
 
 
@@ -74,6 +91,8 @@ express.json()
 
 
 
+
+
 app.use(
 
 cookieParser()
@@ -82,11 +101,15 @@ cookieParser()
 
 
 
+
+
 app.use(
 
 apiLimiter
 
 );
+
+
 
 
 
@@ -100,11 +123,15 @@ apiRoutes
 
 
 
+
+
 app.use(
 
 errorMiddleware
 
 );
+
+
 
 
 
