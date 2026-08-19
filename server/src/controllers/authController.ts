@@ -17,6 +17,22 @@ import {
 
 
 
+const cookieOptions = {
+  httpOnly: true,
+
+  secure:
+    process.env.NODE_ENV === "production",
+
+  sameSite: "lax" as const,
+
+  maxAge:
+    7 * 24 * 60 * 60 * 1000,
+
+};
+
+
+
+// Register User
 export const register = async (
   req: Request,
   res: Response
@@ -42,7 +58,7 @@ export const register = async (
       return res.status(400).json({
 
         message:
-          "Please provide name, email and password",
+          "Name, email and password are required",
 
       });
 
@@ -94,7 +110,7 @@ export const register = async (
 
 
 
-    // Create default income and expense categories
+    // Create default categories
     await createDefaultCategories(
       user._id.toString()
     );
@@ -109,24 +125,9 @@ export const register = async (
 
 
     res.cookie(
-
       "token",
-
       token,
-
-      {
-        httpOnly: true,
-
-        secure:
-          process.env.NODE_ENV === "production",
-
-        sameSite: "lax",
-
-        maxAge:
-          7 * 24 * 60 * 60 * 1000,
-
-      }
-
+      cookieOptions
     );
 
 
@@ -159,9 +160,10 @@ export const register = async (
 
   } catch (error) {
 
-
-    console.error(error);
-
+    console.error(
+      "Registration error:",
+      error
+    );
 
 
     return res.status(500).json({
@@ -170,7 +172,6 @@ export const register = async (
         "Registration failed",
 
     });
-
 
   }
 
@@ -182,11 +183,11 @@ export const register = async (
 
 
 
+// Login User
 export const login = async (
   req: Request,
   res: Response
 ) => {
-
 
   try {
 
@@ -214,7 +215,6 @@ export const login = async (
 
 
 
-
     const user =
       await User.findOne({
 
@@ -234,8 +234,6 @@ export const login = async (
       });
 
     }
-
-
 
 
 
@@ -263,16 +261,10 @@ export const login = async (
 
 
 
-
-
     const token =
       generateToken(
-
         user._id.toString()
-
       );
-
-
 
 
 
@@ -282,23 +274,9 @@ export const login = async (
 
       token,
 
-      {
-
-        httpOnly: true,
-
-        secure:
-          process.env.NODE_ENV === "production",
-
-        sameSite: "lax",
-
-        maxAge:
-          7 * 24 * 60 * 60 * 1000,
-
-      }
+      cookieOptions
 
     );
-
-
 
 
 
@@ -328,11 +306,13 @@ export const login = async (
 
 
 
-
   } catch (error) {
 
 
-    console.error(error);
+    console.error(
+      "Login error:",
+      error
+    );
 
 
 
@@ -343,7 +323,33 @@ export const login = async (
 
     });
 
-
   }
+
+};
+
+
+
+
+
+
+
+// Logout User
+export const logout = async (
+  _req: Request,
+  res: Response
+) => {
+
+  res.clearCookie(
+    "token",
+    cookieOptions
+  );
+
+
+  return res.status(200).json({
+
+    message:
+      "Logout successful",
+
+  });
 
 };

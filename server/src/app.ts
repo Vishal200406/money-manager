@@ -11,58 +11,50 @@ const app = express();
 
 
 app.use(
-helmet()
+  helmet()
 );
 
 
 app.use(
-cors({
+  cors({
 
-origin:
-env.CLIENT_URL,
+    origin: env.CLIENT_URL,
 
-credentials:true,
+    credentials: true,
 
-})
-);
-
-
-
-app.use(
-express.json()
+  })
 );
 
 
 app.use(
-cookieParser()
+  express.json()
 );
-
 
 
 app.use(
-"/api",
-apiRoutes
+  cookieParser()
 );
 
+
+app.use(
+  "/api",
+  apiRoutes
+);
 
 
 app.get(
-"/",
-(_req,res)=>{
+  "/",
+  (_req,res)=>{
 
-res.json({
+    res.json({
 
-message:
-"Money Manager API is running",
+      message:
+      "Money Manager API is running",
 
-environment:
-env.NODE_ENV,
+    });
 
-});
-
-}
+  }
 );
-
 
 
 export default app;

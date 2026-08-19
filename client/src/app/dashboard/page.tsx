@@ -1,9 +1,65 @@
-import DashboardLayout from "@/components/DashboardLayout";
+"use client";
 
-import SummaryCard from "@/components/SummaryCard";
+
+import {
+useEffect,
+useState
+} from "react";
+
+
+import DashboardLayout
+from "@/components/DashboardLayout";
+
+
+import SummaryCard
+from "@/components/SummaryCard";
+
+
+import {
+getDashboardAnalytics
+}
+from "@/lib/analyticsApi";
+
+
+import BudgetAlert
+from "@/components/BudgetAlert";
+
 
 
 export default function DashboardPage(){
+
+
+const [data,setData]
+=
+useState<any>(null);
+
+
+
+useEffect(()=>{
+
+getDashboardAnalytics()
+
+.then(setData);
+
+
+},[]);
+
+
+
+if(!data){
+
+return (
+
+<p>
+
+Loading dashboard...
+
+</p>
+
+);
+
+}
+
 
 
 return (
@@ -11,48 +67,22 @@ return (
 <DashboardLayout>
 
 
-<h1
+<h1 className="text-3xl font-bold mb-6">
 
-className="
-text-3xl
-font-bold
-mb-6
-"
-
->
-
-Good morning 👋
+Financial Overview
 
 </h1>
 
 
 
-<div
-
-className="
-grid
-grid-cols-1
-md:grid-cols-4
-gap-5
-"
-
->
-
-
-<SummaryCard
-
-title="Balance"
-
-value="$0.00"
-
-/>
+<div className="grid md:grid-cols-3 gap-5">
 
 
 <SummaryCard
 
 title="Income"
 
-value="$0.00"
+value={`$${data.income}`}
 
 />
 
@@ -61,7 +91,7 @@ value="$0.00"
 
 title="Expenses"
 
-value="$0.00"
+value={`$${data.expenses}`}
 
 />
 
@@ -70,9 +100,52 @@ value="$0.00"
 
 title="Savings"
 
-value="$0.00"
+value={`$${data.savings}`}
 
 />
+
+
+</div>
+
+
+
+
+<div className="mt-8 space-y-4">
+
+
+{
+
+data.budgetStatus.map(
+
+(item:any)=>(
+
+
+<BudgetAlert
+
+key={
+item.category._id
+}
+
+category={
+item.category.name
+}
+
+percentage={
+item.percentage
+}
+
+status={
+item.status
+}
+
+/>
+
+
+)
+
+)
+
+}
 
 
 </div>
@@ -82,5 +155,6 @@ value="$0.00"
 </DashboardLayout>
 
 );
+
 
 }
