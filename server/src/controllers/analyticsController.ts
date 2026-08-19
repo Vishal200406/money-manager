@@ -1,7 +1,7 @@
 import { Response } from "express";
 
 import {
-  AuthRequest
+AuthRequest
 } from "../middleware/authMiddleware";
 
 import Transaction from "../models/Transaction";
@@ -10,219 +10,157 @@ import Budget from "../models/Budget";
 
 
 
-export const getDashboardAnalytics = async (
+export const getDashboardAnalytics = async(
 
-  req: AuthRequest,
+req:AuthRequest,
 
-  res: Response
+res:Response
 
-) => {
+)=>{
 
-  try {
 
+try{
 
-    const userId = req.user?.id;
 
+const userId =
+req.user?.id;
 
 
-    if (!userId) {
+if(!userId){
 
-      return res.status(401).json({
+return res.status(401).json({
 
-        message:
-          "Not authenticated",
+message:"Not authenticated"
 
-      });
+});
 
-    }
+}
 
 
 
-    const transactions =
-      await Transaction.find({
+const transactions =
+await Transaction.find({
 
-        userId,
+userId
 
-      });
+})
+.populate(
+"categoryId",
+"name icon"
+);
 
 
 
-    let income = 0;
+let income=0;
 
-    let expenses = 0;
+let expenses=0;
 
 
+const categoryMap:any={};
 
-    transactions.forEach(
-      (transaction)=>{
 
 
-        if(transaction.type === "income"){
+transactions.forEach(
+(transaction)=>{
 
-          income += transaction.amount;
 
-        }
+if(transaction.type==="income"){
 
+income += transaction.amount;
 
-        if(transaction.type === "expense"){
+}
 
-          expenses += transaction.amount;
 
-        }
 
+if(transaction.type==="expense"){
 
-      }
 
-    );
+expenses += transaction.amount;
 
 
 
-    const savings =
-      income - expenses;
+const category =
+transaction.categoryId as any;
 
 
 
-    const budgets =
-      await Budget.find({
+if(!categoryMap[category.name]){
 
-        userId,
 
-      })
-      .populate(
+categoryMap[category.name]={
 
-        "categoryId",
+name:category.name,
 
-        "name icon"
+amount:0
 
-      );
+};
 
 
+}
 
-    const budgetStatus =
-      await Promise.all(
 
-        budgets.map(
-          async(budget)=>{
 
+categoryMap[category.name].amount +=
+transaction.amount;
 
-            const categoryExpenses =
-              await Transaction.aggregate([
 
-              {
+}
 
-                $match:{
 
-                  userId:
-                    budget.userId,
+});
 
-                  categoryId:
-                    budget.categoryId,
 
-                  type:
-                    "expense",
 
-                  },
+const categoryExpenses =
+Object.values(categoryMap);
 
-              },
 
-              {
 
-                $group:{
+const budgets =
+await Budget.find({
 
-                  _id:null,
+userId
 
-                  total:{
+})
+.populate(
+"categoryId",
+"name icon"
+);
 
-                    $sum:"$amount",
 
-                  },
 
-                },
+return res.json({
 
-              },
+income,
 
-            ]);
+expenses,
 
+savings:
+income-expenses,
 
+categoryExpenses,
 
-            const spent =
-              categoryExpenses[0]?.total || 0;
+budgets
 
+});
 
 
-            const percentage =
-              (spent / budget.amount) * 100;
 
+}catch(error){
 
 
-            return {
+console.error(error);
 
-              category:
-                budget.categoryId,
 
-              limit:
-                budget.amount,
 
-              spent,
+return res.status(500).json({
 
-              percentage,
+message:
+"Analytics failed"
 
-              status:
+});
 
-                percentage >= 100
 
-                ? "exceeded"
-
-                :
-
-                percentage >= 80
-
-                ? "warning"
-
-                :
-
-                "safe",
-
-            };
-
-
-          }
-
-        )
-
-      );
-
-
-
-    return res.json({
-
-      income,
-
-      expenses,
-
-      savings,
-
-      budgetStatus,
-
-    });
-
-
-
-  } catch(error) {
-
-
-    console.error(error);
-
-
-
-    return res.status(500).json({
-
-      message:
-        "Failed to load analytics",
-
-    });
-
-
-  }
+}
 
 };

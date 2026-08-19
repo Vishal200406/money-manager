@@ -2,47 +2,69 @@
 
 
 import {
+
 useEffect,
+
 useState
+
 } from "react";
 
 
 import DashboardLayout
+
 from "@/components/DashboardLayout";
 
 
 import SummaryCard
+
 from "@/components/SummaryCard";
 
 
+import ExpensePieChart
+
+from "@/components/ExpensePieChart";
+
+
+import IncomeExpenseChart
+
+from "@/components/IncomeExpenseChart";
+
+
+import SavingsCard
+
+from "@/components/SavingsCard";
+
+
 import {
+
 getDashboardAnalytics
+
 }
+
 from "@/lib/analyticsApi";
-
-
-import BudgetAlert
-from "@/components/BudgetAlert";
 
 
 
 export default function DashboardPage(){
 
 
-const [data,setData]
-=
+const [data,setData]=
+
 useState<any>(null);
 
 
 
 useEffect(()=>{
 
+
 getDashboardAnalytics()
 
 .then(setData);
 
 
+
 },[]);
+
 
 
 
@@ -67,15 +89,32 @@ return (
 <DashboardLayout>
 
 
-<h1 className="text-3xl font-bold mb-6">
+<h1
 
-Financial Overview
+className="
+text-3xl
+font-bold
+mb-6
+"
+
+>
+
+Financial Dashboard
 
 </h1>
 
 
 
-<div className="grid md:grid-cols-3 gap-5">
+
+<div
+
+className="
+grid
+md:grid-cols-4
+gap-5
+"
+
+>
 
 
 <SummaryCard
@@ -87,6 +126,7 @@ value={`$${data.income}`}
 />
 
 
+
 <SummaryCard
 
 title="Expenses"
@@ -96,11 +136,22 @@ value={`$${data.expenses}`}
 />
 
 
+
 <SummaryCard
 
-title="Savings"
+title="Balance"
 
 value={`$${data.savings}`}
+
+/>
+
+
+
+<SavingsCard
+
+income={data.income}
+
+expenses={data.expenses}
 
 />
 
@@ -110,42 +161,35 @@ value={`$${data.savings}`}
 
 
 
-<div className="mt-8 space-y-4">
+
+<div
+
+className="
+grid
+md:grid-cols-2
+gap-6
+mt-8
+"
+
+>
 
 
-{
+<ExpensePieChart
 
-data.budgetStatus.map(
-
-(item:any)=>(
-
-
-<BudgetAlert
-
-key={
-item.category._id
-}
-
-category={
-item.category.name
-}
-
-percentage={
-item.percentage
-}
-
-status={
-item.status
-}
+data={data.categoryExpenses}
 
 />
 
 
-)
 
-)
+<IncomeExpenseChart
 
-}
+income={data.income}
+
+expenses={data.expenses}
+
+/>
+
 
 
 </div>
@@ -155,6 +199,5 @@ item.status
 </DashboardLayout>
 
 );
-
 
 }
