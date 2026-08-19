@@ -23,6 +23,8 @@ import notificationRoutes from "./notificationRoutes";
 
 import userRoutes from "./userRoutes";
 
+import exportRoutes from "./exportRoutes";
+
 
 
 const router =
@@ -51,70 +53,29 @@ service:
 
 
 
-router.use(
-"/auth",
-authRoutes
-);
+router.use("/auth",authRoutes);
 
+router.use("/transactions",transactionRoutes);
 
-router.use(
-"/transactions",
-transactionRoutes
-);
+router.use("/categories",categoryRoutes);
 
+router.use("/budgets",budgetRoutes);
 
-router.use(
-"/categories",
-categoryRoutes
-);
+router.use("/analytics",analyticsRoutes);
 
+router.use("/reports",reportRoutes);
 
-router.use(
-"/budgets",
-budgetRoutes
-);
+router.use("/currency",currencyRoutes);
 
+router.use("/recurring",recurringRoutes);
 
-router.use(
-"/analytics",
-analyticsRoutes
-);
+router.use("/goals",savingsGoalRoutes);
 
+router.use("/notifications",notificationRoutes);
 
-router.use(
-"/reports",
-reportRoutes
-);
+router.use("/users",userRoutes);
 
-
-router.use(
-"/currency",
-currencyRoutes
-);
-
-
-router.use(
-"/recurring",
-recurringRoutes
-);
-
-
-router.use(
-"/goals",
-savingsGoalRoutes
-);
-
-
-router.use(
-"/notifications",
-notificationRoutes
-);
-
-
-router.use(
-"/users",
-userRoutes
-);
+router.use("/exports",exportRoutes);
 
 
 
