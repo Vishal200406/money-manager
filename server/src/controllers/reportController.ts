@@ -1,89 +1,74 @@
-import { Response } from "express";
-
-import {
-  AuthRequest
-} from "../middleware/authMiddleware";
-
+import { Request, Response } from "express";
 import Transaction from "../models/Transaction";
 
 
+export const getReports = async (
 
-export const getMonthlyReport = async (
+req:Request,
 
-req: AuthRequest,
+res:Response
 
-res: Response
-
-) => {
-
-
-try {
+)=>{
 
 
-const userId =
-req.user?.id;
+try{
+
+
+const userId = (req as any).user.id;
+
+
+const period =
+req.query.period || "month";
 
 
 
-if(!userId){
+let startDate = new Date();
 
-return res.status(401).json({
 
-message:
-"Not authenticated"
 
-});
+if(period==="year"){
+
+startDate.setFullYear(
+
+startDate.getFullYear()-1
+
+);
+
+}
+
+else if(period==="month"){
+
+startDate.setMonth(
+
+startDate.getMonth()-1
+
+);
+
+}
+
+else{
+
+startDate = new Date(0);
 
 }
 
 
 
-const month =
-Number(req.query.month)
-||
-new Date().getMonth()+1;
 
 
-
-const year =
-Number(req.query.year)
-||
-new Date().getFullYear();
-
-
-
-const startDate =
-new Date(
-year,
-month - 1,
-1
-);
-
-
-
-const endDate =
-new Date(
-year,
-month,
-1
-);
-
-
-
-const transactions =
-await Transaction.find({
+const transactions = await Transaction.find({
 
 userId,
 
 date:{
 
-$gte:startDate,
-
-$lt:endDate
+$gte:startDate
 
 }
 
 });
+
+
 
 
 
@@ -92,86 +77,140 @@ let income = 0;
 let expenses = 0;
 
 
-
 const categories:any = {};
 
 
 
-transactions.forEach(
-(transaction)=>{
+
+
+transactions.forEach((transaction:any)=>{
 
 
 if(transaction.type==="income"){
 
+
 income += transaction.amount;
+
 
 }
 
+else{
 
-
-if(transaction.type==="expense"){
 
 expenses += transaction.amount;
 
 
 
 const category =
-transaction.categoryId.toString();
+
+transaction.category?.name ||
+
+"Other";
 
 
 
 if(!categories[category]){
 
-categories[category]=0;
+
+categories[category]={
+
+name:category,
+
+amount:0
+
+};
+
 
 }
 
 
-categories[category]
-+= transaction.amount;
+categories[category].amount +=
+
+transaction.amount;
 
 
 }
+
 
 
 });
 
 
 
-return res.json({
 
-month,
 
-year,
+const categoryData =
+
+Object.values(categories).map(
+
+(item:any)=>({
+
+
+...item,
+
+
+percent:
+
+expenses > 0
+
+?
+
+Math.round(
+
+(item.amount / expenses)*100
+
+)
+
+:
+
+0
+
+
+})
+
+);
+
+
+
+
+
+
+
+res.json({
 
 income,
 
 expenses,
 
 savings:
+
 income-expenses,
 
-categories
+categories:categoryData,
+
+trend:[]
 
 });
 
 
 
-}catch(error){
+}
+
+catch(error){
 
 
 console.error(error);
 
 
-return res.status(500).json({
+res.status(500).json({
 
-message:
-"Failed to generate report"
+message:"Failed generating report"
 
 });
 
 
 }
+
 
 
 };

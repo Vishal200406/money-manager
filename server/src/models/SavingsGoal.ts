@@ -1,55 +1,17 @@
-import mongoose, {
-  Schema,
-  Document,
-} from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
 
-export interface ISavingsGoal extends Document {
-
-  userId:
-  mongoose.Types.ObjectId;
-
-
-  name:string;
-
-
-  targetAmount:number;
-
-
-  currentAmount:number;
-
-
-  currency:
-  "USD" |
-  "CAD" |
-  "GBP" |
-  "INR";
-
-
-  deadline:Date;
-
-
-  createdAt:Date;
-
-
-  updatedAt:Date;
-
-}
-
-
-
-const SavingsGoalSchema =
-new Schema<ISavingsGoal>(
+const SavingsGoalSchema = new Schema(
 
 {
 
 userId:{
 
-type:Schema.Types.ObjectId,
+type:mongoose.Schema.Types.ObjectId,
 
 ref:"User",
 
-required:true,
+required:true
 
 },
 
@@ -58,9 +20,7 @@ name:{
 
 type:String,
 
-required:true,
-
-trim:true,
+required:true
 
 },
 
@@ -69,59 +29,41 @@ targetAmount:{
 
 type:Number,
 
-required:true,
-
-min:0,
+required:true
 
 },
 
 
-currentAmount:{
+savedAmount:{
 
 type:Number,
 
-default:0,
-
-min:0,
-
-},
-
-
-currency:{
-
-type:String,
-
-enum:[
-
-"USD",
-
-"CAD",
-
-"GBP",
-
-"INR"
-
-],
-
-default:"USD",
+default:0
 
 },
 
 
 deadline:{
 
-type:Date,
-
-required:true,
+type:Date
 
 },
+
+
+createdAt:{
+
+type:Date,
+
+default:Date.now
+
+}
 
 
 },
 
 {
 
-timestamps:true,
+timestamps:true
 
 }
 
@@ -129,15 +71,7 @@ timestamps:true,
 
 
 
-SavingsGoalSchema.index({
-
-userId:1,
-
-});
-
-
-
-export default mongoose.model<ISavingsGoal>(
+export default mongoose.model(
 
 "SavingsGoal",
 

@@ -1,30 +1,36 @@
-import { Router } from "express";
+import express from "express";
 
 
 import {
-getMonthlyReport
+
+getReports
+
 }
+
 from "../controllers/reportController";
 
 
 import {
+
 protect
+
 }
+
 from "../middleware/authMiddleware";
 
 
-const router =
-Router();
+
+const router = express.Router();
 
 
 
 router.get(
 
-"/monthly",
+"/",
 
 protect,
 
-getMonthlyReport
+getReports
 
 );
 

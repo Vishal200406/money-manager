@@ -1,26 +1,14 @@
-import { Response } from "express";
+import {Request, Response} from "express";
 
-
-import {
-
-AuthRequest
-
-}
-
-from "../middleware/authMiddleware";
-
-
-import SavingsGoal
-
-from "../models/SavingsGoal";
+import SavingsGoal from "../models/SavingsGoal";
 
 
 
-// Create goal
-export const createGoal =
-async(
 
-req:AuthRequest,
+
+export const getGoals = async(
+
+req:Request,
 
 res:Response
 
@@ -31,60 +19,98 @@ try{
 
 
 const userId =
-req.user?.id;
+
+(req as any).user.id;
 
 
 
-if(!userId){
+const goals = await SavingsGoal.find({
 
-return res.status(401).json({
-
-message:
-"Not authenticated"
+userId
 
 });
+
+
+
+res.json(goals);
+
+
+
+}
+
+catch(error){
+
+
+res.status(500).json({
+
+message:"Failed loading goals"
+
+});
+
 
 }
 
 
+};
 
-const goal =
-await SavingsGoal.create({
+
+
+
+
+
+
+
+
+export const createGoal = async(
+
+req:Request,
+
+res:Response
+
+)=>{
+
+
+try{
+
+
+const userId =
+
+(req as any).user.id;
+
+
+
+const goal = await SavingsGoal.create({
 
 userId,
 
-...req.body,
+name:req.body.name,
+
+targetAmount:req.body.targetAmount,
+
+deadline:req.body.deadline
 
 });
 
 
 
-return res.status(201).json({
-
-message:
-"Savings goal created",
-
-goal
-
-});
+res.status(201).json(goal);
 
 
 
-}catch(error){
+}
+
+catch(error){
 
 
-console.error(error);
+res.status(500).json({
 
-
-return res.status(500).json({
-
-message:
-"Failed to create goal"
+message:"Failed creating goal"
 
 });
 
 
 }
+
 
 };
 
@@ -94,70 +120,11 @@ message:
 
 
 
-// Get goals
-export const getGoals =
-async(
-
-req:AuthRequest,
-
-res:Response
-
-)=>{
 
 
-try{
+export const deleteGoal = async(
 
-
-const userId =
-req.user?.id;
-
-
-
-const goals =
-await SavingsGoal.find({
-
-userId
-
-})
-
-.sort({
-
-createdAt:-1
-
-});
-
-
-
-return res.json(goals);
-
-
-
-}catch(error){
-
-
-return res.status(500).json({
-
-message:
-"Failed to fetch goals"
-
-});
-
-
-}
-
-};
-
-
-
-
-
-
-
-// Update contribution
-export const updateGoalAmount =
-async(
-
-req:AuthRequest,
+req:Request,
 
 res:Response
 
@@ -167,49 +134,67 @@ res:Response
 try{
 
 
-const userId =
-req.user?.id;
-
-
-const {
-
-amount
-
-}
-
-=req.body;
-
-
-
-const goal =
-await SavingsGoal.findOneAndUpdate(
-
-{
+await SavingsGoal.findOneAndDelete({
 
 _id:req.params.id,
 
-userId
+userId:(req as any).user.id
 
-},
+});
 
-{
 
-$inc:{
 
-currentAmount:
-amount
+res.json({
 
-}
+message:"Goal deleted"
 
-},
+});
 
-{
-
-new:true
 
 }
 
-);
+catch(error){
+
+
+res.status(500).json({
+
+message:"Failed deleting goal"
+
+});
+
+
+}
+
+
+};
+
+
+
+
+
+
+
+
+
+export const addMoney = async(
+
+req:Request,
+
+res:Response
+
+)=>{
+
+
+try{
+
+
+const goal = await SavingsGoal.findOne({
+
+_id:req.params.id,
+
+userId:(req as any).user.id
+
+});
 
 
 
@@ -217,8 +202,7 @@ if(!goal){
 
 return res.status(404).json({
 
-message:
-"Goal not found"
+message:"Goal not found"
 
 });
 
@@ -226,80 +210,33 @@ message:
 
 
 
-return res.json(goal);
+goal.savedAmount +=
+
+Number(req.body.amount);
 
 
 
-}catch(error){
+await goal.save();
 
 
-return res.status(500).json({
 
-message:
-"Failed to update goal"
+res.json(goal);
+
+
+
+}
+
+catch(error){
+
+
+res.status(500).json({
+
+message:"Failed adding money"
 
 });
 
 
 }
 
-};
-
-
-
-
-
-
-
-// Delete goal
-export const deleteGoal =
-async(
-
-req:AuthRequest,
-
-res:Response
-
-)=>{
-
-
-try{
-
-
-const userId =
-req.user?.id;
-
-
-
-await SavingsGoal.findOneAndDelete({
-
-_id:req.params.id,
-
-userId
-
-});
-
-
-
-return res.json({
-
-message:
-"Goal deleted"
-
-});
-
-
-
-}catch(error){
-
-
-return res.status(500).json({
-
-message:
-"Failed to delete goal"
-
-});
-
-
-}
 
 };

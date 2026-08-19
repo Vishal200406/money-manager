@@ -1,34 +1,71 @@
 import api from "./api";
 
 
-export const getMonthlyReport =
-async(
-month:number,
-year:number
+export const getReports = async(
+
+period:string
+
 )=>{
 
 
 const response =
+
 await api.get(
 
-"/reports/monthly",
+`/reports?period=${period}`
+
+);
+
+
+return response.data;
+
+
+};
+
+
+
+export const exportPDF = async(
+
+period:string
+
+)=>{
+
+
+return api.get(
+
+`/reports/export/pdf?period=${period}`,
 
 {
 
-params:{
-
-month,
-
-year
-
-}
+responseType:"blob"
 
 }
 
 );
 
 
+};
 
-return response.data;
+
+
+export const exportExcel = async(
+
+period:string
+
+)=>{
+
+
+return api.get(
+
+`/reports/export/excel?period=${period}`,
+
+{
+
+responseType:"blob"
+
+}
+
+);
+
 
 };

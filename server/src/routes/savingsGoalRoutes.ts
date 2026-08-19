@@ -1,15 +1,15 @@
-import { Router } from "express";
+import express from "express";
 
 
 import {
 
-createGoal,
+  getGoals,
 
-getGoals,
+  createGoal,
 
-updateGoalAmount,
+  deleteGoal,
 
-deleteGoal
+  addMoney
 
 }
 
@@ -18,7 +18,7 @@ from "../controllers/savingsGoalController";
 
 import {
 
-protect
+  protect
 
 }
 
@@ -26,56 +26,99 @@ from "../middleware/authMiddleware";
 
 
 
-const router =
-Router();
+const router = express.Router();
 
 
 
-router.post(
-
-"/",
-
-protect,
-
-createGoal
-
-);
 
 
+// Test route - remove later
 
 router.get(
 
-"/",
+  "/test",
 
-protect,
+  (req,res)=>{
 
-getGoals
+
+    res.json({
+
+      message:
+
+      "Savings goals route working"
+
+    });
+
+
+  }
+
+);
+
+
+
+
+
+// Get all savings goals
+
+router.get(
+
+  "/",
+
+  protect,
+
+  getGoals
 
 );
 
 
 
-router.patch(
 
-"/:id",
 
-protect,
+// Create savings goal
 
-updateGoalAmount
+router.post(
+
+  "/",
+
+  protect,
+
+  createGoal
 
 );
 
 
+
+
+
+// Delete savings goal
 
 router.delete(
 
-"/:id",
+  "/:id",
 
-protect,
+  protect,
 
-deleteGoal
+  deleteGoal
 
 );
+
+
+
+
+
+// Add money to savings goal
+
+router.patch(
+
+  "/:id/add-money",
+
+  protect,
+
+  addMoney
+
+);
+
+
 
 
 

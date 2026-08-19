@@ -2,33 +2,22 @@ import { Router } from "express";
 
 
 import authRoutes from "./authRoutes";
-
 import transactionRoutes from "./transactionRoutes";
-
 import categoryRoutes from "./categoryRoutes";
-
 import budgetRoutes from "./budgetRoutes";
-
 import analyticsRoutes from "./analyticsRoutes";
-
 import reportRoutes from "./reportRoutes";
-
 import currencyRoutes from "./currencyRoutes";
-
 import recurringRoutes from "./recurringRoutes";
-
 import savingsGoalRoutes from "./savingsGoalRoutes";
-
 import notificationRoutes from "./notificationRoutes";
-
 import userRoutes from "./userRoutes";
-
 import exportRoutes from "./exportRoutes";
 
 
 
-const router =
-Router();
+const router = Router();
+
 
 
 
@@ -42,8 +31,7 @@ res.json({
 
 status:"OK",
 
-service:
-"Money Manager API"
+service:"Money Manager API"
 
 });
 
@@ -53,29 +41,31 @@ service:
 
 
 
-router.use("/auth",authRoutes);
 
-router.use("/transactions",transactionRoutes);
 
-router.use("/categories",categoryRoutes);
+router.use("/auth", authRoutes);
 
-router.use("/budgets",budgetRoutes);
+router.use("/transactions", transactionRoutes);
 
-router.use("/analytics",analyticsRoutes);
+router.use("/categories", categoryRoutes);
 
-router.use("/reports",reportRoutes);
+router.use("/budgets", budgetRoutes);
 
-router.use("/currency",currencyRoutes);
+router.use("/analytics", analyticsRoutes);
 
-router.use("/recurring",recurringRoutes);
+router.use("/reports", reportRoutes);
 
-router.use("/goals",savingsGoalRoutes);
+router.use("/currency", currencyRoutes);
 
-router.use("/notifications",notificationRoutes);
+router.use("/recurring", recurringRoutes);
 
-router.use("/users",userRoutes);
+router.use("/savings-goals", savingsGoalRoutes);
 
-router.use("/exports",exportRoutes);
+router.use("/notifications", notificationRoutes);
+
+router.use("/users", userRoutes);
+
+router.use("/exports", exportRoutes);
 
 
 
