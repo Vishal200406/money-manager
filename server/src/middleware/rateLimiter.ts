@@ -1,49 +1,29 @@
 import rateLimit from "express-rate-limit";
 
 
-export const apiLimiter =
-rateLimit({
 
-windowMs:
-15 * 60 * 1000,
+export const apiLimiter = rateLimit({
 
+  windowMs: 60 * 1000,
 
-max:
-100,
+  max: 500,
 
+  standardHeaders: true,
 
-message:{
-
-success:false,
-
-message:
-"Too many requests. Please try again later."
-
-}
-
+  legacyHeaders: false
 
 });
 
 
 
-export const authLimiter =
-rateLimit({
+export const authLimiter = rateLimit({
 
-windowMs:
-15 * 60 * 1000,
+  windowMs: 15 * 60 * 1000,
 
+  max: 100,
 
-max:
-5,
+  standardHeaders: true,
 
-
-message:{
-
-success:false,
-
-message:
-"Too many login attempts. Try again later."
-
-}
+  legacyHeaders: false
 
 });

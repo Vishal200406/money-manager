@@ -59,6 +59,8 @@ from "@/lib/categoryApi";
 
 
 
+
+
 export default function BudgetsPage(){
 
 
@@ -85,6 +87,28 @@ setCategories
 
 const [
 
+loading,
+
+setLoading
+
+]=useState(true);
+
+
+
+const [
+
+error,
+
+setError
+
+]=useState("");
+
+
+
+
+
+const [
+
 form,
 
 setForm
@@ -101,7 +125,20 @@ limit:""
 
 
 
-const loadData=async()=>{
+
+
+
+
+const loadData = async()=>{
+
+
+try{
+
+
+setLoading(true);
+
+setError("");
+
 
 
 const [
@@ -122,7 +159,7 @@ getCategories()
 
 setBudgets(
 
-budgetData
+budgetData || []
 
 );
 
@@ -130,13 +167,53 @@ budgetData
 
 setCategories(
 
-categoryData
+categoryData || []
 
 );
 
 
 
+}
+
+catch(err:any){
+
+
+console.error(
+
+"Loading budgets failed",
+
+err
+
+);
+
+
+
+setError(
+
+err?.response?.data?.message ||
+
+"Unable to load budgets"
+
+);
+
+
+}
+
+finally{
+
+
+setLoading(false);
+
+
+}
+
+
+
 };
+
+
+
+
 
 
 
@@ -156,7 +233,9 @@ loadData();
 
 
 
-const submit=async()=>{
+
+
+const submit = async()=>{
 
 
 if(
@@ -165,8 +244,15 @@ if(
 
 !form.limit
 
-)return;
+){
 
+return;
+
+}
+
+
+
+try{
 
 
 await createBudget({
@@ -183,6 +269,8 @@ Number(form.limit)
 
 
 
+
+
 setForm({
 
 categoryId:"",
@@ -193,7 +281,24 @@ limit:""
 
 
 
-loadData();
+await loadData();
+
+
+}
+
+catch(err){
+
+
+console.error(
+
+"Creating budget failed",
+
+err
+
+);
+
+
+}
 
 
 };
@@ -204,20 +309,45 @@ loadData();
 
 
 
-const remove=async(
+
+
+const remove = async(
 
 id:string
 
 )=>{
 
 
+try{
+
+
 await deleteBudget(id);
 
 
-loadData();
+await loadData();
+
+
+}
+
+catch(err){
+
+
+console.error(
+
+"Deleting budget failed",
+
+err
+
+);
+
+
+}
 
 
 };
+
+
+
 
 
 
@@ -239,6 +369,8 @@ space-y-8
 
 
 
+
+
 <div>
 
 
@@ -256,6 +388,8 @@ Budgets
 </h1>
 
 
+
+
 <p
 
 className="
@@ -271,6 +405,7 @@ Control your spending and stay within limits.
 
 
 </div>
+
 
 
 
@@ -298,6 +433,8 @@ Create Budget
 
 
 
+
+
 <div
 
 className="
@@ -307,6 +444,8 @@ gap-4
 "
 
 >
+
+
 
 
 
@@ -372,13 +511,19 @@ value={category._id}
 
 
 
+
+
 <Input
+
 
 placeholder="Monthly limit"
 
+
 type="number"
 
+
 value={form.limit}
+
 
 onChange={(e)=>
 
@@ -392,7 +537,11 @@ limit:e.target.value
 
 }
 
+
 />
+
+
+
 
 
 
@@ -411,6 +560,8 @@ Create Budget
 
 
 
+
+
 </div>
 
 
@@ -421,6 +572,64 @@ Create Budget
 
 
 
+
+
+
+{
+
+loading
+
+?
+
+(
+
+<Card>
+
+
+<p>
+
+Loading budgets...
+
+</p>
+
+
+</Card>
+
+)
+
+
+:
+
+error
+
+?
+
+(
+
+<Card>
+
+
+<p
+
+className="
+text-red-600
+"
+
+>
+
+{error}
+
+</p>
+
+
+</Card>
+
+)
+
+
+:
+
+(
 
 
 
@@ -493,6 +702,7 @@ text-5xl
 
 
 
+
 <h3
 
 className="
@@ -506,6 +716,7 @@ mt-4
 No budgets yet
 
 </h3>
+
 
 
 
@@ -534,7 +745,18 @@ Create your first budget to track spending.
 }
 
 
+
 </div>
+
+
+
+)
+
+
+}
+
+
+
 
 
 
@@ -546,5 +768,6 @@ Create your first budget to track spending.
 </PageAnimation>
 
 );
+
 
 }

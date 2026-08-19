@@ -3,9 +3,9 @@
 
 import Link from "next/link";
 
-
 import {
-  usePathname
+  usePathname,
+  useRouter
 } from "next/navigation";
 
 
@@ -14,8 +14,7 @@ import {
 } from "@/config/navigation";
 
 
-import Avatar
-from "@/components/ui/Avatar";
+import Avatar from "@/components/ui/Avatar";
 
 
 import {
@@ -24,17 +23,52 @@ import {
 
 
 
+
 export default function Sidebar(){
 
 
-  const pathname =
-  usePathname();
+  const pathname = usePathname();
+
+  const router = useRouter();
 
 
 
   const {
-    user
+    user,
+    logout
   } = useAuth();
+
+
+
+
+
+  const handleLogout = async()=>{
+
+
+    try {
+
+
+      await logout();
+
+
+      router.push("/login");
+
+
+
+    } catch(error){
+
+
+      console.error(
+        "Logout failed",
+        error
+      );
+
+
+    }
+
+
+  };
+
 
 
 
@@ -96,42 +130,24 @@ export default function Sidebar(){
 
         <div>
 
-
-          <h1
-
-            className="
-            font-bold
-            text-xl
-            "
-
-          >
+          <h1 className="font-bold text-xl">
 
             Money Manager
 
           </h1>
 
 
-
-          <p
-
-            className="
-            text-xs
-            text-gray-500
-            "
-
-          >
+          <p className="text-xs text-gray-500">
 
             Finance Dashboard
 
           </p>
 
 
-
         </div>
 
 
       </div>
-
 
 
 
@@ -149,94 +165,75 @@ export default function Sidebar(){
 
       >
 
-
         {
-
-          navigation.map(
-
-            (item)=>{
+          navigation.map((item)=>{
 
 
-              const Icon =
-              item.icon;
+            const Icon = item.icon;
 
 
-
-              const active =
+            const active =
               pathname === item.href;
 
 
 
-              return (
+            return (
 
-                <Link
+              <Link
 
-                  key={item.href}
+                key={item.href}
 
-                  href={item.href}
+                href={item.href}
 
-                  className={`
+                className={`
 
-                  flex
+                flex
+                items-center
+                gap-3
+                px-4
+                py-3
+                rounded-xl
+                transition
 
-                  items-center
+                ${
+                  active
 
-                  gap-3
+                  ?
 
-                  px-4
+                  "bg-blue-600 text-white shadow-md"
 
-                  py-3
+                  :
 
-                  rounded-xl
+                  "text-gray-600 hover:bg-gray-100"
 
-                  transition
+                }
 
-                  ${
-                    active
+                `}
 
-                    ?
-
-                    "bg-blue-600 text-white shadow-md"
-
-                    :
-
-                    "text-gray-600 hover:bg-gray-100"
-
-                  }
-
-                  `}
-
-                >
+              >
 
 
-                  <Icon
-
-                    size={20}
-
-                  />
+                <Icon size={20}/>
 
 
-                  <span>
+                <span>
 
-                    {item.name}
+                  {item.name}
 
-                  </span>
-
-
-                </Link>
-
-              );
+                </span>
 
 
-            }
+              </Link>
 
-          )
+            );
+
+
+          })
 
         }
 
 
       </nav>
-
 
 
 
@@ -255,7 +252,6 @@ export default function Sidebar(){
         "
 
       >
-
 
 
         <div
@@ -283,31 +279,17 @@ export default function Sidebar(){
           <div>
 
 
-            <p
-
-              className="
-              font-semibold
-              "
-
-            >
+            <p className="font-semibold">
 
               {
                 user?.name || "User"
               }
 
-
             </p>
 
 
 
-            <p
-
-              className="
-              text-sm
-              text-gray-500
-              "
-
-            >
+            <p className="text-sm text-gray-500">
 
               {
                 user?.currency || "USD"
@@ -320,7 +302,6 @@ export default function Sidebar(){
             </p>
 
 
-
           </div>
 
 
@@ -330,7 +311,10 @@ export default function Sidebar(){
 
 
 
+
         <button
+
+          onClick={handleLogout}
 
           className="
           w-full
@@ -351,7 +335,6 @@ export default function Sidebar(){
 
 
       </div>
-
 
 
 

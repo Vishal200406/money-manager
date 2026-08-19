@@ -9,18 +9,17 @@ import {
 } from "../middleware/authMiddleware";
 
 
-const router =
-Router();
+const router = Router();
 
 
 
 router.get(
 
-"/dashboard",
+  "/dashboard",
 
-protect,
+  protect,
 
-getDashboardAnalytics
+  getDashboardAnalytics
 
 );
 

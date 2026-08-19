@@ -1,8 +1,12 @@
 import { Response } from "express";
 
+
 import {
-AuthRequest
+
+  AuthRequest
+
 } from "../middleware/authMiddleware";
+
 
 import Transaction from "../models/Transaction";
 
@@ -10,157 +14,241 @@ import Budget from "../models/Budget";
 
 
 
+
+
 export const getDashboardAnalytics = async(
 
-req:AuthRequest,
+  req: AuthRequest,
 
-res:Response
+  res: Response
 
 )=>{
 
 
-try{
+  try {
 
 
-const userId =
-req.user?.id;
+    const userId =
 
+      req.user?._id;
 
-if(!userId){
 
-return res.status(401).json({
 
-message:"Not authenticated"
+    if(!userId){
 
-});
 
-}
+      return res.status(401).json({
 
+        message:
 
+        "Not authenticated"
 
-const transactions =
-await Transaction.find({
+      });
 
-userId
 
-})
-.populate(
-"categoryId",
-"name icon"
-);
+    }
 
 
 
-let income=0;
 
-let expenses=0;
 
+    const transactions = await Transaction.find({
 
-const categoryMap:any={};
+      userId
 
+    })
 
+    .populate(
 
-transactions.forEach(
-(transaction)=>{
+      "categoryId",
 
+      "name icon"
 
-if(transaction.type==="income"){
+    );
 
-income += transaction.amount;
 
-}
 
 
 
-if(transaction.type==="expense"){
 
 
-expenses += transaction.amount;
+    let income = 0;
 
 
+    let expenses = 0;
 
-const category =
-transaction.categoryId as any;
 
 
 
-if(!categoryMap[category.name]){
 
+    const categoryMap:any = {};
 
-categoryMap[category.name]={
 
-name:category.name,
 
-amount:0
 
-};
 
+    transactions.forEach(
 
-}
+      (transaction:any)=>{
 
 
+        if(transaction.type === "income"){
 
-categoryMap[category.name].amount +=
-transaction.amount;
 
+          income += transaction.amount;
 
-}
 
+        }
 
-});
 
 
 
-const categoryExpenses =
-Object.values(categoryMap);
 
+        if(transaction.type === "expense"){
 
 
-const budgets =
-await Budget.find({
+          expenses += transaction.amount;
 
-userId
 
-})
-.populate(
-"categoryId",
-"name icon"
-);
 
 
 
-return res.json({
+          const category =
 
-income,
+            transaction.categoryId;
 
-expenses,
 
-savings:
-income-expenses,
 
-categoryExpenses,
 
-budgets
 
-});
+          if(category){
 
 
+            if(!categoryMap[category.name]){
 
-}catch(error){
 
+              categoryMap[category.name] = {
 
-console.error(error);
 
+                name:
 
+                category.name,
 
-return res.status(500).json({
 
-message:
-"Analytics failed"
+                amount:0
 
-});
 
+              };
 
-}
+
+            }
+
+
+
+
+
+            categoryMap[category.name].amount +=
+
+              transaction.amount;
+
+
+          }
+
+
+        }
+
+
+      }
+
+    );
+
+
+
+
+
+
+
+    const categoryExpenses =
+
+      Object.values(categoryMap);
+
+
+
+
+
+
+
+    const budgets = await Budget.find({
+
+      userId
+
+    })
+
+    .populate(
+
+      "categoryId",
+
+      "name icon"
+
+    );
+
+
+
+
+
+
+
+    return res.status(200).json({
+
+
+      income,
+
+
+      expenses,
+
+
+      savings:
+
+        income - expenses,
+
+
+      categoryExpenses,
+
+
+      budgets
+
+
+    });
+
+
+
+
+
+  } catch(error){
+
+
+
+    console.error(
+
+      "Analytics error:",
+
+      error
+
+    );
+
+
+
+
+    return res.status(500).json({
+
+      message:
+
+      "Analytics failed"
+
+    });
+
+
+  }
+
 
 };

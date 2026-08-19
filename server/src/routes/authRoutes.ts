@@ -3,11 +3,11 @@ import { Router } from "express";
 
 import {
 
-register,
+  register,
 
-login,
+  login,
 
-logout
+  logout
 
 }
 
@@ -16,85 +16,69 @@ from "../controllers/authController";
 
 import {
 
-authLimiter
+  authLimiter
 
 }
 
 from "../middleware/rateLimiter";
 
 
-import {
 
-registerValidator,
-
-loginValidator
-
-}
-
-from "../validators/authValidator";
-
-
-import {
-
-validate
-
-}
-
-from "../middleware/validateMiddleware";
-
-
-
-const router =
-Router();
+const router = Router();
 
 
 
 
-// Register new user
+
+// ======================
+// Register User
+// ======================
 
 router.post(
 
-"/register",
+  "/register",
 
-registerValidator,
+  authLimiter,
 
-validate,
-
-register
+  register
 
 );
 
 
 
 
-// Login user with rate limiting
+
+// ======================
+// Login User
+// ======================
 
 router.post(
 
-"/login",
+  "/login",
 
-authLimiter,
+  authLimiter,
 
-loginValidator,
-
-validate,
-
-login
+  login
 
 );
 
 
 
 
-// Logout user
+
+// ======================
+// Logout User
+// ======================
 
 router.post(
 
-"/logout",
+  "/logout",
 
-logout
+  logout
 
 );
+
+
 
 
 

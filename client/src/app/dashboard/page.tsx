@@ -14,6 +14,15 @@ from "react";
 
 import {
 
+useRouter
+
+}
+
+from "next/navigation";
+
+
+import {
+
 Wallet,
 
 TrendingUp,
@@ -27,32 +36,41 @@ PiggyBank
 from "lucide-react";
 
 
+
 import DashboardLayout
+
 from "@/components/DashboardLayout";
 
 
 import StatCard
+
 from "@/components/dashboard/StatCard";
 
 
 import QuickAction
+
 from "@/components/dashboard/QuickAction";
 
 
 import BudgetProgress
+
 from "@/components/dashboard/BudgetProgress";
 
 
 import ExpensePieChart
+
 from "@/components/ExpensePieChart";
 
 
 import IncomeExpenseChart
+
 from "@/components/IncomeExpenseChart";
 
 
 import PageAnimation
+
 from "@/components/PageAnimation";
+
 
 
 import {
@@ -62,6 +80,7 @@ getDashboardAnalytics
 }
 
 from "@/lib/analyticsApi";
+
 
 
 import {
@@ -74,260 +93,232 @@ from "@/context/AuthContext";
 
 
 
+
+
 export default function DashboardPage(){
 
 
-  const {
 
-    user
+const router = useRouter();
 
-  } = useAuth();
 
 
+const {
 
+user,
 
-  const [
+loading:userLoading
 
-    data,
+}
 
-    setData
+=
 
-  ] = useState<any>(null);
+useAuth();
 
 
 
 
 
-  useEffect(()=>{
+const [
 
+data,
 
-    getDashboardAnalytics()
+setData
 
-    .then(setData)
+]
 
-    .catch(error=>{
+=
 
-      console.error(
+useState<any>(null);
 
-        "Dashboard error",
 
-        error
 
-      );
+const [
 
-    });
+loading,
 
+setLoading
 
-  },[]);
+]
 
+=
 
+useState(true);
 
 
 
 
 
-  if(!data){
 
+// Protect dashboard route
 
-    return (
+useEffect(()=>{
 
-      <DashboardLayout>
 
+if(!userLoading && !user){
 
-        <p className="p-6">
 
-          Loading dashboard...
+router.replace("/login");
 
-        </p>
 
+}
 
-      </DashboardLayout>
 
-    );
+},[
 
+user,
 
-  }
+userLoading,
 
+router
 
+]);
 
 
 
 
 
-  return (
 
-    <DashboardLayout>
 
+// Load dashboard data only when user exists
 
-      <PageAnimation>
+useEffect(()=>{
 
 
-        <div
+if(!user){
 
-          className="
-          space-y-8
-          "
+return;
 
-        >
+}
 
 
 
-          {/* Header */}
+const loadDashboard = async()=>{
 
-          <div>
 
+try{
 
-            <h1
 
-              className="
-              text-3xl
-              font-bold
-              "
+const result =
 
-            >
+await getDashboardAnalytics();
 
-              Good morning{" "}
 
-              {
-                user?.name?.split(" ")[0]
-                ||
-                "there"
-              }
 
-              👋
+setData(result);
 
 
-            </h1>
 
+}
 
+catch(error){
 
-            <p
 
-              className="
-              text-gray-500
-              mt-2
-              "
+console.error(
 
-            >
+"Dashboard error",
 
-              Here is your financial overview.
+error
 
-            </p>
+);
 
 
-          </div>
+}
 
+finally{
 
 
+setLoading(false);
 
 
+}
 
 
 
+};
 
-          {/* Summary Cards */}
 
-          <div
 
-            className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
-            xl:grid-cols-4
-            gap-6
-            "
+loadDashboard();
 
-          >
 
 
+},[user]);
 
-            <StatCard
 
-              title="Balance"
 
-              value={
 
-                `$${
 
-                  data.balance ||
 
-                  data.savings ||
 
-                  0
 
-                }`
 
-              }
+if(
 
-              icon={<Wallet/>}
+userLoading ||
 
-              type="blue"
+loading ||
 
-            />
+!user
 
+){
 
 
+return (
 
+<DashboardLayout>
 
-            <StatCard
 
-              title="Income"
+<p className="p-6">
 
-              value={
+Loading dashboard...
 
-                `$${data.income || 0}`
+</p>
 
-              }
 
-              icon={<TrendingUp/>}
+</DashboardLayout>
 
-              type="green"
+);
 
-            />
 
+}
 
 
 
 
-            <StatCard
 
-              title="Expenses"
 
-              value={
 
-                `$${data.expenses || 0}`
 
-              }
 
-              icon={<TrendingDown/>}
+if(!data){
 
-              type="red"
 
-            />
+return (
 
+<DashboardLayout>
 
 
+<PageAnimation>
 
 
-            <StatCard
+<p className="p-6 text-gray-500">
 
-              title="Savings"
+Unable to load dashboard data.
 
-              value={
+</p>
 
-                `$${data.savings || 0}`
 
-              }
+</PageAnimation>
 
-              icon={<PiggyBank/>}
 
-              type="purple"
+</DashboardLayout>
 
-            />
+);
 
 
+}
 
-          </div>
 
 
 
@@ -336,83 +327,83 @@ export default function DashboardPage(){
 
 
 
+return (
 
-          {/* Charts */}
 
-          <div
+<DashboardLayout>
 
-            className="
-            grid
-            xl:grid-cols-2
-            gap-6
-            "
 
-          >
+<PageAnimation>
 
 
+<div
 
-            <ExpensePieChart
+className="
+space-y-8
+"
 
-              data={
+>
 
-                data.categoryExpenses || []
 
-              }
 
-            />
 
 
+{/* Header */}
 
-            <IncomeExpenseChart
+<div>
 
-              income={
 
-                data.income || 0
+<h1
 
-              }
+className="
+text-3xl
+font-bold
+"
 
-              expenses={
+>
 
-                data.expenses || 0
 
-              }
+Good morning{" "}
 
-            />
 
+{
 
+user?.name?.split(" ")[0]
 
-          </div>
+||
 
+"there"
 
+}
 
 
+👋
 
 
 
+</h1>
 
 
-          {/* Budgets */}
 
-          {
 
-            data.budgets &&
+<p
 
-            data.budgets.length > 0
+className="
+text-gray-500
+mt-2
+"
 
-            &&
+>
 
+Here is your financial overview.
 
-            (
+</p>
 
-              <BudgetProgress
 
-                budgets={data.budgets}
+</div>
 
-              />
 
-            )
 
-          }
 
 
 
@@ -421,98 +412,314 @@ export default function DashboardPage(){
 
 
 
+{/* Summary Cards */}
 
 
-          {/* Quick Actions */}
+<div
 
-          <div>
+className="
+grid
+grid-cols-1
+md:grid-cols-2
+xl:grid-cols-4
+gap-6
+"
 
+>
 
-            <h2
 
-              className="
-              text-xl
-              font-bold
-              mb-4
-              "
 
-            >
+<StatCard
 
-              Quick Actions
+title="Balance"
 
-            </h2>
+value={
 
+`$${
 
+data.balance ||
 
+data.savings ||
 
-            <div
+0
 
-              className="
-              grid
-              md:grid-cols-3
-              gap-5
-              "
+}`
 
-            >
+}
 
+icon={<Wallet/>}
 
+type="blue"
 
-              <QuickAction
+/>
 
-                title="Add Expense"
 
-                href="/transactions"
 
-                icon="💸"
 
-              />
 
 
+<StatCard
 
-              <QuickAction
+title="Income"
 
-                title="View Reports"
+value={
 
-                href="/reports"
+`$${data.income || 0}`
 
-                icon="📊"
+}
 
-              />
+icon={<TrendingUp/>}
 
+type="green"
 
+/>
 
-              <QuickAction
 
-                title="Savings Goals"
 
-                href="/goals"
 
-                icon="🎯"
 
-              />
 
 
+<StatCard
 
-            </div>
+title="Expenses"
 
+value={
 
+`$${data.expenses || 0}`
 
-          </div>
+}
 
+icon={<TrendingDown/>}
 
+type="red"
 
+/>
 
 
 
 
-        </div>
 
 
-      </PageAnimation>
 
+<StatCard
 
-    </DashboardLayout>
+title="Savings"
 
-  );
+value={
+
+`$${data.savings || 0}`
+
+}
+
+icon={<PiggyBank/>}
+
+type="purple"
+
+/>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Charts */}
+
+
+
+<div
+
+className="
+grid
+xl:grid-cols-2
+gap-6
+"
+
+>
+
+
+
+<ExpensePieChart
+
+data={
+
+data.categoryExpenses || []
+
+}
+
+/>
+
+
+
+
+
+<IncomeExpenseChart
+
+income={
+
+data.income || 0
+
+}
+
+expenses={
+
+data.expenses || 0
+
+}
+
+/>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Budgets */}
+
+
+
+{
+
+data.budgets &&
+
+data.budgets.length > 0
+
+&&
+
+(
+
+<BudgetProgress
+
+budgets={data.budgets}
+
+/>
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+{/* Quick Actions */}
+
+
+
+<div>
+
+
+<h2
+
+className="
+text-xl
+font-bold
+mb-4
+"
+
+>
+
+Quick Actions
+
+</h2>
+
+
+
+
+
+<div
+
+className="
+grid
+md:grid-cols-3
+gap-5
+"
+
+>
+
+
+<QuickAction
+
+title="Add Expense"
+
+href="/transactions"
+
+icon="💸"
+
+/>
+
+
+
+
+
+<QuickAction
+
+title="View Reports"
+
+href="/reports"
+
+icon="📊"
+
+/>
+
+
+
+
+
+<QuickAction
+
+title="Savings Goals"
+
+href="/goals"
+
+icon="🎯"
+
+/>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+</div>
+
+
+</PageAnimation>
+
+
+</DashboardLayout>
+
+
+);
+
 
 }

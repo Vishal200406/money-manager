@@ -7,7 +7,6 @@ import categoryRoutes from "./categoryRoutes";
 import budgetRoutes from "./budgetRoutes";
 import analyticsRoutes from "./analyticsRoutes";
 import reportRoutes from "./reportRoutes";
-import currencyRoutes from "./currencyRoutes";
 import recurringRoutes from "./recurringRoutes";
 import savingsGoalRoutes from "./savingsGoalRoutes";
 import notificationRoutes from "./notificationRoutes";
@@ -21,21 +20,24 @@ const router = Router();
 
 
 
+
+// Health check
+
 router.get(
 
-"/health",
+  "/health",
 
-(_req,res)=>{
+  (_req, res) => {
 
-res.json({
+    res.status(200).json({
 
-status:"OK",
+      status: "OK",
 
-service:"Money Manager API"
+      service: "Money Manager API"
 
-});
+    });
 
-}
+  }
 
 );
 
@@ -43,29 +45,180 @@ service:"Money Manager API"
 
 
 
-router.use("/auth", authRoutes);
 
-router.use("/transactions", transactionRoutes);
 
-router.use("/categories", categoryRoutes);
+// Authentication routes
 
-router.use("/budgets", budgetRoutes);
+router.use(
 
-router.use("/analytics", analyticsRoutes);
+  "/auth",
 
-router.use("/reports", reportRoutes);
+  authRoutes
 
-router.use("/currency", currencyRoutes);
+);
 
-router.use("/recurring", recurringRoutes);
 
-router.use("/savings-goals", savingsGoalRoutes);
 
-router.use("/notifications", notificationRoutes);
 
-router.use("/users", userRoutes);
 
-router.use("/exports", exportRoutes);
+
+
+// Transaction routes
+
+router.use(
+
+  "/transactions",
+
+  transactionRoutes
+
+);
+
+
+
+
+
+
+
+// Category routes
+
+router.use(
+
+  "/categories",
+
+  categoryRoutes
+
+);
+
+
+
+
+
+
+
+// Budget routes
+
+router.use(
+
+  "/budgets",
+
+  budgetRoutes
+
+);
+
+
+
+
+
+
+
+// Analytics routes
+
+router.use(
+
+  "/analytics",
+
+  analyticsRoutes
+
+);
+
+
+
+
+
+
+
+// Reports routes
+
+router.use(
+
+  "/reports",
+
+  reportRoutes
+
+);
+
+
+
+
+
+
+
+// Recurring payment routes
+
+router.use(
+
+  "/recurring",
+
+  recurringRoutes
+
+);
+
+
+
+
+
+
+
+// Savings goals routes
+
+router.use(
+
+  "/savings-goals",
+
+  savingsGoalRoutes
+
+);
+
+
+
+
+
+
+
+// Notification routes
+
+router.use(
+
+  "/notifications",
+
+  notificationRoutes
+
+);
+
+
+
+
+
+
+
+// User routes
+
+router.use(
+
+  "/users",
+
+  userRoutes
+
+);
+
+
+
+
+
+
+
+// Export routes
+
+router.use(
+
+  "/exports",
+
+  exportRoutes
+
+);
+
+
+
 
 
 

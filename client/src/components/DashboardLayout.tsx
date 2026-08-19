@@ -2,28 +2,46 @@
 
 
 import {
+
 ReactNode
-} from "react";
+
+}
+
+from "react";
 
 
 import Sidebar
+
 from "@/components/Sidebar";
 
 
 import MobileNav
+
 from "@/components/MobileNav";
 
 
 import MobileHeader
+
 from "@/components/MobileHeader";
+
+
+import ProtectedRoute
+
+from "@/components/ProtectedRoute";
+
 
 
 
 interface Props {
 
+
 children:ReactNode;
 
+
 }
+
+
+
 
 
 
@@ -35,7 +53,14 @@ children
 
 
 
+
+
 return (
+
+
+<ProtectedRoute>
+
+
 
 <div
 
@@ -48,7 +73,12 @@ bg-gray-50
 
 
 
+
+
 <MobileHeader />
+
+
+
 
 
 
@@ -61,7 +91,13 @@ flex
 >
 
 
+
+
 <Sidebar />
+
+
+
+
 
 
 
@@ -77,13 +113,19 @@ md:pb-6
 
 >
 
+
 {children}
+
 
 </main>
 
 
 
+
+
 </div>
+
+
 
 
 
@@ -92,8 +134,17 @@ md:pb-6
 
 
 
+
+
 </div>
 
+
+
+</ProtectedRoute>
+
+
+
 );
+
 
 }

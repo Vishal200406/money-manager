@@ -1,58 +1,81 @@
 import api from "./api";
 
 
+
 export const getBudgets = async()=>{
 
-const response =
-await api.get(
-"/budgets"
-);
+
+  const response = await api.get(
+
+    "/budgets"
+
+  );
 
 
-return response.data;
+  return response.data;
+
 
 };
+
+
 
 
 
 export const createBudget = async(
 
-data:any
+  data:any
 
 )=>{
 
 
-const response =
-await api.post(
-
-"/budgets",
-
-data
-
-);
+  const now = new Date();
 
 
-return response.data;
+
+  const response = await api.post(
+
+    "/budgets",
+
+    {
+
+      categoryId:data.categoryId,
+
+      amount:Number(data.limit),
+
+      month:now.getMonth()+1,
+
+      year:now.getFullYear()
+
+    }
+
+  );
+
+
+
+  return response.data;
+
 
 };
 
 
 
+
+
 export const deleteBudget = async(
 
-id:string
+  id:string
 
 )=>{
 
 
-const response =
-await api.delete(
+  const response = await api.delete(
 
-`/budgets/${id}`
+    `/budgets/${id}`
 
-);
+  );
 
 
-return response.data;
+  return response.data;
+
 
 };

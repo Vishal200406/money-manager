@@ -2,47 +2,91 @@
 
 
 import {
-useState
+
+useState,
+
+useEffect
+
 }
+
 from "react";
 
 
 import {
+
 useRouter
+
 }
+
 from "next/navigation";
 
 
 import AuthCard
+
 from "@/components/AuthCard";
 
 
 import Input
+
 from "@/components/ui/Input";
 
 
 import Select
+
 from "@/components/ui/Select";
 
 
 import Button
+
 from "@/components/ui/Button";
 
 
 import PasswordInput
+
 from "@/components/ui/PasswordInput";
 
 
 import api
+
 from "@/lib/api";
+
+
+import {
+
+useAuth
+
+}
+
+from "@/context/AuthContext";
+
+
 
 
 
 export default function RegisterPage(){
 
 
-const router =
-useRouter();
+
+const router = useRouter();
+
+
+
+const {
+
+user,
+
+loading:userLoading,
+
+refreshUser
+
+}
+
+=
+
+useAuth();
+
+
+
 
 
 
@@ -52,7 +96,11 @@ form,
 
 setForm
 
-]=useState({
+]
+
+=
+
+useState({
 
 name:"",
 
@@ -68,13 +116,22 @@ currency:"USD"
 
 
 
+
+
+
 const [
 
 error,
 
 setError
 
-]=useState("");
+]
+
+=
+
+useState("");
+
+
 
 
 
@@ -84,7 +141,47 @@ loading,
 
 setLoading
 
-]=useState(false);
+]
+
+=
+
+useState(false);
+
+
+
+
+
+
+
+
+
+// Redirect logged-in users
+
+useEffect(()=>{
+
+
+if(!userLoading && user){
+
+
+router.replace("/dashboard");
+
+
+}
+
+
+
+},[
+
+user,
+
+userLoading,
+
+router
+
+]);
+
+
+
 
 
 
@@ -107,11 +204,11 @@ setError("");
 
 
 
+
+
 if(
 
-form.password !==
-
-form.confirmPassword
+form.password !== form.confirmPassword
 
 ){
 
@@ -125,7 +222,9 @@ setError(
 
 return;
 
+
 }
+
 
 
 
@@ -147,7 +246,12 @@ setError(
 
 return;
 
+
 }
+
+
+
+
 
 
 
@@ -157,6 +261,9 @@ try{
 
 
 setLoading(true);
+
+
+
 
 
 
@@ -181,6 +288,18 @@ currency:form.currency
 
 
 
+
+
+
+// Load newly created user
+
+await refreshUser();
+
+
+
+
+
+
 router.push(
 
 "/dashboard"
@@ -189,9 +308,14 @@ router.push(
 
 
 
+
+
+
+
 }
 
 catch(error:any){
+
 
 
 setError(
@@ -201,6 +325,7 @@ error.response?.data?.message ||
 "Registration failed"
 
 );
+
 
 
 }
@@ -214,7 +339,57 @@ setLoading(false);
 }
 
 
+
 };
+
+
+
+
+
+
+
+
+
+if(userLoading){
+
+
+return (
+
+<div
+
+className="
+min-h-screen
+flex
+items-center
+justify-center
+"
+
+>
+
+Loading...
+
+</div>
+
+);
+
+
+}
+
+
+
+
+
+
+
+if(user){
+
+
+return null;
+
+
+}
+
+
 
 
 
@@ -222,11 +397,14 @@ setLoading(false);
 
 return (
 
+
 <AuthCard
 
 title="Create Account"
 
 >
+
+
 
 
 <form
@@ -238,6 +416,8 @@ space-y-5
 "
 
 >
+
+
 
 
 
@@ -260,6 +440,8 @@ name:e.target.value
 }
 
 />
+
+
 
 
 
@@ -291,6 +473,10 @@ email:e.target.value
 
 
 
+
+
+
+
 <PasswordInput
 
 value={form.password}
@@ -310,6 +496,9 @@ password:e.target.value
 }
 
 />
+
+
+
 
 
 
@@ -341,6 +530,8 @@ confirmPassword:e.target.value
 
 
 
+
+
 <Select
 
 value={form.currency}
@@ -359,11 +550,15 @@ currency:e.target.value
 
 >
 
+
+
 <option value="USD">
 
 USD - US Dollar
 
 </option>
+
+
 
 
 <option value="CAD">
@@ -373,6 +568,9 @@ CAD - Canadian Dollar
 </option>
 
 
+
+
+
 <option value="GBP">
 
 GBP - British Pound
@@ -380,11 +578,15 @@ GBP - British Pound
 </option>
 
 
+
+
+
 <option value="INR">
 
 INR - Indian Rupee
 
 </option>
+
 
 
 </Select>
@@ -395,9 +597,10 @@ INR - Indian Rupee
 
 
 
+
 {
 
-error && (
+error &&
 
 <p
 
@@ -412,15 +615,18 @@ text-sm
 
 </p>
 
-)
-
 }
 
 
 
 
 
+
+
+
 <Button>
+
+
 
 {
 
@@ -436,15 +642,25 @@ loading
 
 }
 
+
+
 </Button>
+
+
 
 
 
 </form>
 
 
+
+
+
 </AuthCard>
 
+
+
 );
+
 
 }

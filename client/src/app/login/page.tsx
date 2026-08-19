@@ -2,43 +2,86 @@
 
 
 import {
-useState
+
+useState,
+
+useEffect
+
 }
+
 from "react";
 
 
 import {
+
 useRouter
+
 }
+
 from "next/navigation";
 
 
 import AuthCard
+
 from "@/components/AuthCard";
 
 
 import Input
+
 from "@/components/ui/Input";
 
 
 import Button
+
 from "@/components/ui/Button";
 
 
 import api
+
 from "@/lib/api";
+
+
+import {
+
+useAuth
+
+}
+
+from "@/context/AuthContext";
+
+
 
 
 
 export default function LoginPage(){
 
 
-const router =
-useRouter();
+
+const router = useRouter();
 
 
 
-const [form,setForm]=useState({
+const {
+
+user,
+
+loading:userLoading,
+
+refreshUser
+
+}
+
+=
+
+useAuth();
+
+
+
+
+
+const [form,setForm] =
+
+useState({
 
 email:"",
 
@@ -48,16 +91,55 @@ password:""
 
 
 
-const [loading,setLoading]=useState(false);
+
+
+const [loading,setLoading] =
+
+useState(false);
 
 
 
-const [error,setError]=useState("");
+const [error,setError] =
+
+useState("");
 
 
 
 
-const submit=async(
+
+
+
+// Redirect already logged-in users
+
+useEffect(()=>{
+
+
+if(!userLoading && user){
+
+
+router.replace("/dashboard");
+
+
+}
+
+
+},[
+
+user,
+
+userLoading,
+
+router
+
+]);
+
+
+
+
+
+
+
+const submit = async(
 
 e:React.FormEvent
 
@@ -77,6 +159,8 @@ setError("");
 
 
 
+
+
 await api.post(
 
 "/auth/login",
@@ -87,11 +171,22 @@ form
 
 
 
+
+
+// Load logged-in user
+
+await refreshUser();
+
+
+
+
+
 router.push(
 
 "/dashboard"
 
 );
+
 
 
 
@@ -109,13 +204,17 @@ err.response?.data?.message ||
 );
 
 
+
 }
 
 finally{
 
+
 setLoading(false);
 
+
 }
+
 
 
 };
@@ -124,9 +223,60 @@ setLoading(false);
 
 
 
+
+
+
+
+if(userLoading){
+
+
 return (
 
+<div
+
+className="
+min-h-screen
+flex
+items-center
+justify-center
+"
+
+>
+
+Loading...
+
+</div>
+
+);
+
+
+}
+
+
+
+
+
+
+if(user){
+
+
+return null;
+
+
+}
+
+
+
+
+
+
+
+
+return (
+
+
 <AuthCard title="Login">
+
 
 
 <form
@@ -138,6 +288,8 @@ space-y-5
 "
 
 >
+
+
 
 
 <Input
@@ -161,6 +313,9 @@ email:e.target.value
 }
 
 />
+
+
+
 
 
 
@@ -189,14 +344,22 @@ password:e.target.value
 
 
 
+
+
+
+
 {
 
 error &&
 
-<p className="
+<p
+
+className="
 text-red-600
 text-sm
-">
+"
+
+>
 
 {error}
 
@@ -206,7 +369,12 @@ text-sm
 
 
 
+
+
+
+
 <Button>
+
 
 {
 
@@ -222,15 +390,23 @@ loading
 
 }
 
+
+
 </Button>
+
+
 
 
 
 </form>
 
 
+
 </AuthCard>
 
+
+
 );
+
 
 }
