@@ -1,15 +1,10 @@
-import {
-ReactNode
-} from "react";
-
-
 interface Props {
 
 title:string;
 
 value:string;
 
-icon:ReactNode;
+icon:React.ReactNode;
 
 type?:
 "blue"
@@ -40,22 +35,17 @@ type="blue"
 
 const colors={
 
-
 blue:
 "bg-blue-50 text-blue-600",
-
 
 green:
 "bg-green-50 text-green-600",
 
-
 red:
 "bg-red-50 text-red-600",
 
-
 purple:
-"bg-purple-50 text-purple-600"
-
+"bg-purple-50 text-purple-600",
 
 };
 
@@ -69,9 +59,8 @@ className="
 bg-white
 rounded-2xl
 border
-shadow-card
-p-6
-hover:shadow-lg
+p-5
+hover:shadow-md
 transition
 "
 
@@ -81,14 +70,23 @@ transition
 <div
 
 className={`
-w-12
-h-12
+
+w-10
+
+h-10
+
 rounded-xl
+
 flex
+
 items-center
+
 justify-center
+
 mb-4
+
 ${colors[type]}
+
 `}
 
 >
@@ -102,8 +100,8 @@ ${colors[type]}
 <p
 
 className="
-text-gray-500
 text-sm
+text-gray-500
 "
 
 >
@@ -117,9 +115,11 @@ text-sm
 <h2
 
 className="
-text-3xl
+text-2xl
+md:text-3xl
 font-bold
 mt-2
+break-words
 "
 
 >

@@ -10,6 +10,14 @@ import Sidebar
 from "@/components/Sidebar";
 
 
+import MobileNav
+from "@/components/MobileNav";
+
+
+import MobileHeader
+from "@/components/MobileHeader";
+
+
 
 interface Props {
 
@@ -34,6 +42,19 @@ return (
 className="
 min-h-screen
 bg-gray-50
+"
+
+>
+
+
+
+<MobileHeader />
+
+
+
+<div
+
+className="
 flex
 "
 
@@ -48,8 +69,10 @@ flex
 
 className="
 flex-1
-p-6
-overflow-hidden
+p-4
+md:p-6
+pb-24
+md:pb-6
 "
 
 >
@@ -57,6 +80,15 @@ overflow-hidden
 {children}
 
 </main>
+
+
+
+</div>
+
+
+
+
+<MobileNav />
 
 
 

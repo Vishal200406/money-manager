@@ -145,3 +145,13 @@ textarea:focus {
   rgba(37,99,235,0.15);
 
 }
+
+@media(max-width:768px){
+
+body{
+
+padding-bottom:80px;
+
+}
+
+}
