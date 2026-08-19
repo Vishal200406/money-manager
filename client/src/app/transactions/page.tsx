@@ -31,437 +31,390 @@ import Button
 from "@/components/ui/Button";
 
 
-import {
-  Transaction
-} from "@/types/transaction";
+import Input
+from "@/components/ui/Input";
+
+
+import Select
+from "@/components/ui/Select";
+
+
+import TransactionCard
+from "@/components/transactions/TransactionCard";
 
 
 
 export default function TransactionsPage(){
 
 
-const [
-  transactions,
-  setTransactions
-] = useState<Transaction[]>([]);
+  const [
+    transactions,
+    setTransactions
+  ] = useState<any[]>([]);
 
 
 
-const [
-  categories,
-  setCategories
-] = useState<any[]>([]);
+  const [
+    categories,
+    setCategories
+  ] = useState<any[]>([]);
 
 
 
-const [
-  loading,
-  setLoading
-] = useState(true);
+  const [
+    loading,
+    setLoading
+  ] = useState(true);
 
 
 
-const [
-  form,
-  setForm
-] = useState({
+  const [
+    submitting,
+    setSubmitting
+  ] = useState(false);
 
-  type:"expense",
 
-  amount:"",
 
-  currency:"USD",
+  const [
+    form,
+    setForm
+  ] = useState({
 
-  description:"",
+    type:"expense",
 
-  date:
-  new Date()
-  .toISOString()
-  .substring(0,10),
+    amount:"",
 
-  categoryId:"",
+    currency:"USD",
 
-});
+    description:"",
 
+    date:
+    new Date()
+    .toISOString()
+    .substring(0,10),
 
+    categoryId:"",
 
+  });
 
 
-const loadData =
-async()=>{
 
 
-try{
 
+  const loadData =
+  async()=>{
 
-setLoading(true);
 
+    try{
 
 
-const [
-  transactionData,
-  categoryData
-]
-=
-await Promise.all([
+      setLoading(true);
 
-  getTransactions(),
 
-  getCategories()
 
-]);
+      const [
 
+        transactionData,
 
+        categoryData
 
-setTransactions(
-  transactionData
-);
+      ] = await Promise.all([
 
+        getTransactions(),
 
+        getCategories()
 
-setCategories(
-  categoryData
-);
+      ]);
 
 
 
-}
+      setTransactions(
 
-catch(error){
+        transactionData
 
-console.error(
-"Failed loading transactions",
-error
-);
+      );
 
-}
 
-finally{
 
-setLoading(false);
+      setCategories(
 
-}
+        categoryData
 
+      );
 
-};
 
 
+    }
 
+    catch(error){
 
 
-useEffect(()=>{
+      console.error(
 
+        "Failed loading transactions",
 
-loadData();
+        error
 
+      );
 
-},[]);
 
+    }
 
+    finally{
 
 
+      setLoading(false);
 
 
+    }
 
-const handleSubmit =
-async(
-e:React.FormEvent
-)=>{
 
+  };
 
-e.preventDefault();
 
 
 
-if(
-!form.amount ||
-!form.categoryId
-){
 
-alert(
-"Please select category and enter amount"
-);
 
-return;
+  useEffect(()=>{
 
-}
 
+    loadData();
 
 
-try{
+  },[]);
 
 
-await createTransaction({
 
-...form,
 
-amount:
-Number(form.amount)
 
-});
 
 
 
-setForm({
+  const handleSubmit =
+  async(
 
-type:"expense",
+    e:React.FormEvent
 
-amount:"",
+  )=>{
 
-currency:"USD",
 
-description:"",
+    e.preventDefault();
 
-date:
-new Date()
-.toISOString()
-.substring(0,10),
 
-categoryId:"",
 
-});
+    if(
 
+      !form.amount ||
 
+      !form.categoryId
 
-loadData();
+    ){
 
 
+      alert(
 
-}
+        "Please select category and enter amount"
 
-catch(error){
+      );
 
-console.error(
-"Failed creating transaction",
-error
-);
 
-}
+      return;
 
 
-};
+    }
 
 
 
 
 
+    try{
 
 
+      setSubmitting(true);
 
-const removeTransaction =
-async(
-id:string
-)=>{
 
 
-try{
+      await createTransaction({
 
+        ...form,
 
-await deleteTransaction(id);
+        amount:
 
+        Number(form.amount)
 
-loadData();
 
+      });
 
 
-}
 
-catch(error){
 
-console.error(
-"Failed deleting transaction",
-error
-);
 
+      setForm({
 
-}
 
+        type:"expense",
 
-};
 
+        amount:"",
 
 
+        currency:"USD",
 
 
+        description:"",
 
-return (
 
-<PageAnimation>
+        date:
 
+        new Date()
 
-<div className="space-y-8">
+        .toISOString()
 
+        .substring(0,10),
 
 
-<div>
+        categoryId:"",
 
-<h1 className="
-text-3xl
-font-bold
-">
 
-Transactions
+      });
 
-</h1>
 
 
-<p className="
-text-gray-500
-mt-2
-">
 
-Track your income and expenses.
 
-</p>
+      await loadData();
 
 
-</div>
 
+    }
 
+    catch(error){
 
 
+      console.error(
 
-<Card>
+        "Failed creating transaction",
 
+        error
 
-<h2 className="
-text-xl
-font-semibold
-mb-5
-">
+      );
 
-Add Transaction
 
-</h2>
+    }
 
+    finally{
 
 
+      setSubmitting(false);
 
-<form
 
-onSubmit={handleSubmit}
+    }
 
-className="
-grid
-gap-4
-md:grid-cols-2
-"
 
->
+  };
 
 
 
-<select
 
-value={form.type}
 
-onChange={(e)=>
 
-setForm({
 
-...form,
 
-type:e.target.value
+  const removeTransaction =
+  async(
 
-})
+    id:string
 
-}
+  )=>{
 
-className="
-border
-rounded-lg
-p-3
-"
 
->
+    try{
 
-<option value="expense">
 
-Expense
+      await deleteTransaction(id);
 
-</option>
 
 
-<option value="income">
+      loadData();
 
-Income
 
-</option>
 
+    }
 
-</select>
+    catch(error){
 
 
+      console.error(
 
+        "Failed deleting transaction",
 
+        error
 
+      );
 
 
-<select
+    }
 
-value={form.categoryId}
 
-onChange={(e)=>
+  };
 
-setForm({
 
-...form,
 
-categoryId:e.target.value
 
-})
 
-}
 
-className="
-border
-rounded-lg
-p-3
-"
 
->
+  return (
 
+    <PageAnimation>
 
-<option value="">
 
-Select Category
+      <div
 
-</option>
+      className="
+      space-y-8
+      "
 
+      >
 
 
-{
 
-categories.map(
+        <div>
 
-(category)=>(
 
+          <h1
 
-<option
+          className="
+          text-3xl
+          font-bold
+          tracking-tight
+          "
 
-key={category._id}
+          >
 
-value={category._id}
+            Transactions
 
->
+          </h1>
 
-{category.icon}
 
-{" "}
 
-{category.name}
+          <p
 
-</option>
+          className="
+          text-gray-500
+          mt-2
+          "
 
+          >
 
-)
+            Manage your income and expenses in one place.
 
-)
+          </p>
 
-}
 
+        </div>
 
-</select>
 
 
 
@@ -469,463 +422,601 @@ value={category._id}
 
 
 
+        <Card>
 
-<input
 
-type="number"
+          <h2
 
-placeholder="Amount"
+          className="
+          text-xl
+          font-bold
+          mb-6
+          "
 
-value={form.amount}
+          >
 
-onChange={(e)=>
+            Add New Transaction
 
-setForm({
+          </h2>
 
-...form,
 
-amount:e.target.value
 
-})
 
-}
 
-className="
-border
-rounded-lg
-p-3
-"
+          <form
 
- />
+          onSubmit={handleSubmit}
 
+          className="
+          grid
+          gap-5
+          md:grid-cols-2
+          "
 
+          >
 
 
 
 
 
+            <Select
 
-<select
 
-value={form.currency}
+            value={form.type}
 
-onChange={(e)=>
 
-setForm({
+            onChange={(e)=>
 
-...form,
+              setForm({
 
-currency:e.target.value
+                ...form,
 
-})
+                type:e.target.value
 
-}
+              })
 
-className="
-border
-rounded-lg
-p-3
-"
+            }
 
->
 
-<option>
+            >
 
-USD
 
-</option>
+              <option value="expense">
 
+                Expense
 
-<option>
+              </option>
 
-CAD
 
-</option>
 
+              <option value="income">
 
-<option>
+                Income
 
-GBP
+              </option>
 
-</option>
 
 
-<option>
+            </Select>
 
-INR
 
-</option>
 
 
-</select>
 
 
 
+            <Select
 
 
+            value={form.categoryId}
 
 
-<input
+            onChange={(e)=>
 
-type="date"
+              setForm({
 
-value={form.date}
+                ...form,
 
-onChange={(e)=>
+                categoryId:e.target.value
 
-setForm({
+              })
 
-...form,
+            }
 
-date:e.target.value
 
-})
+            >
 
-}
 
-className="
-border
-rounded-lg
-p-3
-"
+              <option value="">
 
-/>
 
+                Select Category
 
 
+              </option>
 
 
 
 
-<input
 
-placeholder="Description"
+              {
 
-value={form.description}
+                categories.map(
 
-onChange={(e)=>
+                  (category)=>(
 
-setForm({
 
-...form,
+                    <option
 
-description:e.target.value
+                    key={category._id}
 
-})
+                    value={category._id}
 
-}
+                    >
 
-className="
-border
-rounded-lg
-p-3
-md:col-span-2
-"
 
-/>
+                      {category.icon}
 
+                      {" "}
 
+                      {category.name}
 
 
+                    </option>
 
 
+                  )
 
-<Button>
 
-Save Transaction
+                )
 
-</Button>
+              }
 
 
+            </Select>
 
 
-</form>
 
 
-</Card>
 
 
 
 
 
+            <Input
 
 
+            type="number"
 
-<Card>
 
+            placeholder="Amount"
 
-<h2 className="
-text-xl
-font-semibold
-mb-5
-">
 
-Transaction History
+            value={form.amount}
 
-</h2>
 
+            onChange={(e)=>
 
+              setForm({
 
+                ...form,
 
+                amount:e.target.value
 
-{
+              })
 
-loading && (
+            }
 
-<p>
 
-Loading transactions...
+            />
 
-</p>
 
-)
 
-}
 
 
 
 
 
-{
 
-!loading &&
-transactions.length===0 && (
+            <Select
 
 
-<div className="
-text-center
-py-10
-text-gray-500
-">
+            value={form.currency}
 
 
-<div className="
-text-5xl
-">
+            onChange={(e)=>
 
-💰
+              setForm({
 
-</div>
+                ...form,
 
+                currency:e.target.value
 
-<h3 className="
-text-xl
-font-bold
-mt-4
-">
+              })
 
-No transactions yet
+            }
 
-</h3>
 
+            >
 
-<p>
 
-Start tracking your income and expenses.
+              <option value="USD">
 
-</p>
+                USD - Dollar
 
+              </option>
 
 
-</div>
 
+              <option value="CAD">
 
-)
+                CAD - Canadian Dollar
 
-}
+              </option>
 
 
 
+              <option value="GBP">
 
+                GBP - Pound
 
+              </option>
 
 
-<div className="
-space-y-4
-">
 
+              <option value="INR">
 
-{
+                INR - Rupee
 
-transactions.map(
+              </option>
 
-(transaction)=>(
 
 
-<div
+            </Select>
 
-key={transaction._id}
 
-className="
-border
-rounded-lg
-p-4
-flex
-justify-between
-items-center
-"
 
->
 
 
 
-<div>
 
 
-<h3 className="
-font-semibold
-">
 
-{
+            <Input
 
-transaction.categoryId?.icon
 
-}
+            type="date"
 
-{" "}
 
-{
+            value={form.date}
 
-transaction.categoryId?.name
 
-}
+            onChange={(e)=>
 
-</h3>
+              setForm({
 
+                ...form,
 
-<p className="
-text-gray-500
-">
+                date:e.target.value
 
-{
+              })
 
-transaction.description ||
+            }
 
-"No description"
 
-}
+            />
 
-</p>
 
 
-<p className="
-text-sm
-">
 
-{
 
-new Date(
-transaction.date
-)
-.toLocaleDateString()
 
-}
 
-</p>
 
 
-</div>
+            <Input
 
 
+            placeholder="Description"
 
 
+            value={form.description}
 
 
+            onChange={(e)=>
 
-<div className="
-text-right
-">
+              setForm({
 
+                ...form,
 
-<p className="
-font-bold
-text-lg
-">
+                description:e.target.value
 
-{
+              })
 
-transaction.type==="income"
+            }
 
-?
 
-"+"
+            className="
+            md:col-span-2
+            "
 
-:
 
-"-"
+            />
 
-}
 
 
-{transaction.currency}
 
-{" "}
 
-{
 
-transaction.amount
 
-}
 
-</p>
 
+            <Button
 
+            className="
+            md:col-span-2
+            "
 
-<button
+            >
 
-onClick={()=>
+              {
 
-removeTransaction(
-transaction._id
-)
+                submitting
 
-}
+                ?
 
-className="
-text-red-600
-text-sm
-mt-2
-"
+                "Saving..."
 
->
+                :
 
-Delete
+                "Save Transaction"
 
-</button>
+              }
 
 
+            </Button>
 
-</div>
 
 
 
 
+          </form>
 
-</div>
 
 
-)
+        </Card>
 
-)
 
-}
 
 
-</div>
 
 
 
 
-</Card>
 
+        <Card>
 
 
-</div>
+          <div
 
+          className="
+          flex
+          justify-between
+          items-center
+          mb-6
+          "
 
-</PageAnimation>
+          >
 
-);
+
+            <h2
+
+            className="
+            text-xl
+            font-bold
+            "
+
+            >
+
+              Transaction History
+
+            </h2>
+
+
+
+            <span
+
+            className="
+            text-sm
+            text-gray-500
+            "
+
+            >
+
+              {transactions.length}
+
+              {" "}
+
+              records
+
+            </span>
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+          {
+
+            loading && (
+
+              <p
+
+              className="
+              text-gray-500
+              "
+
+              >
+
+                Loading transactions...
+
+              </p>
+
+            )
+
+          }
+
+
+
+
+
+
+
+
+
+          {
+
+            !loading &&
+
+            transactions.length===0 && (
+
+
+              <div
+
+              className="
+              text-center
+              py-12
+              "
+
+              >
+
+
+                <div
+
+                className="
+                text-5xl
+                "
+
+                >
+
+                  💰
+
+                </div>
+
+
+
+                <h3
+
+                className="
+                text-xl
+                font-bold
+                mt-4
+                "
+
+                >
+
+                  No transactions yet
+
+                </h3>
+
+
+
+                <p
+
+                className="
+                text-gray-500
+                mt-2
+                "
+
+                >
+
+                  Start tracking your income and expenses.
+
+                </p>
+
+
+
+              </div>
+
+
+            )
+
+          }
+
+
+
+
+
+
+
+
+
+          <div
+
+          className="
+          space-y-4
+          "
+
+          >
+
+
+
+            {
+
+              transactions.map(
+
+                (transaction)=>(
+
+
+                  <TransactionCard
+
+
+                  key={transaction._id}
+
+
+                  transaction={transaction}
+
+
+                  onDelete={removeTransaction}
+
+
+                  />
+
+
+                )
+
+
+              )
+
+            }
+
+
+
+          </div>
+
+
+
+
+
+        </Card>
+
+
+
+
+
+
+      </div>
+
+
+    </PageAnimation>
+
+  );
 
 
 }

@@ -1,16 +1,10 @@
-import {
-cn
-}
-from "@/lib/utils";
-
-
 interface Props {
 
 children:React.ReactNode;
 
-className?:string;
-
 onClick?:()=>void;
+
+className?:string;
 
 }
 
@@ -20,9 +14,9 @@ export default function Button({
 
 children,
 
-className,
+onClick,
 
-onClick
+className
 
 }:Props){
 
@@ -33,22 +27,33 @@ return (
 
 onClick={onClick}
 
-className={cn(
+className={`
 
-`
-px-4
-py-2
-rounded-lg
-bg-blue-600
+rounded-xl
+
+px-5
+
+py-3
+
+bg-primary
+
 text-white
+
 font-medium
+
+shadow-sm
+
 hover:bg-blue-700
+
+hover:shadow-md
+
+active:scale-95
+
 transition
-`,
 
-className
+${className || ""}
 
-)}
+`}
 
 >
 
