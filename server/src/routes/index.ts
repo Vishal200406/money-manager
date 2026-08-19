@@ -19,6 +19,8 @@ import recurringRoutes from "./recurringRoutes";
 
 import savingsGoalRoutes from "./savingsGoalRoutes";
 
+import notificationRoutes from "./notificationRoutes";
+
 
 
 const router =
@@ -53,12 +55,10 @@ authRoutes
 );
 
 
-
 router.use(
 "/transactions",
 transactionRoutes
 );
-
 
 
 router.use(
@@ -67,12 +67,10 @@ categoryRoutes
 );
 
 
-
 router.use(
 "/budgets",
 budgetRoutes
 );
-
 
 
 router.use(
@@ -81,12 +79,10 @@ analyticsRoutes
 );
 
 
-
 router.use(
 "/reports",
 reportRoutes
 );
-
 
 
 router.use(
@@ -95,17 +91,21 @@ currencyRoutes
 );
 
 
-
 router.use(
 "/recurring",
 recurringRoutes
 );
 
 
-
 router.use(
 "/goals",
 savingsGoalRoutes
+);
+
+
+router.use(
+"/notifications",
+notificationRoutes
 );
 
 
