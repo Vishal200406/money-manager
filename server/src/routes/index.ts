@@ -7,6 +7,8 @@ import transactionRoutes from "./transactionRoutes";
 
 import categoryRoutes from "./categoryRoutes";
 
+import budgetRoutes from "./budgetRoutes";
+
 
 
 const router =
@@ -60,6 +62,16 @@ router.use(
 "/categories",
 
 categoryRoutes
+
+);
+
+
+
+router.use(
+
+"/budgets",
+
+budgetRoutes
 
 );
 
