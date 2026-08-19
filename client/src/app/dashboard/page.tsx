@@ -64,305 +64,455 @@ getDashboardAnalytics
 from "@/lib/analyticsApi";
 
 
+import {
+
+useAuth
+
+}
+
+from "@/context/AuthContext";
+
+
 
 export default function DashboardPage(){
 
 
-const [
+  const {
 
-data,
+    user
 
-setData
+  } = useAuth();
 
-]=useState<any>(null);
 
 
 
-useEffect(()=>{
+  const [
 
+    data,
 
-getDashboardAnalytics()
+    setData
 
-.then(setData);
+  ] = useState<any>(null);
 
 
-},[]);
 
 
 
+  useEffect(()=>{
 
-if(!data){
 
-return (
+    getDashboardAnalytics()
 
-<p className="p-6">
+    .then(setData)
 
-Loading dashboard...
+    .catch(error=>{
 
-</p>
+      console.error(
 
-);
+        "Dashboard error",
 
-}
+        error
 
+      );
 
+    });
 
-return (
 
-<DashboardLayout>
+  },[]);
 
 
-<PageAnimation>
 
 
-<div className="space-y-8">
 
 
 
-<div>
+  if(!data){
 
 
-<h1
+    return (
 
-className="
-text-3xl
-font-bold
-"
+      <DashboardLayout>
 
->
 
-Good morning 👋
+        <p className="p-6">
 
-</h1>
+          Loading dashboard...
 
+        </p>
 
-<p
 
-className="
-text-gray-500
-mt-2
-"
+      </DashboardLayout>
 
->
+    );
 
-Here is your financial overview.
 
-</p>
+  }
 
 
-</div>
 
 
 
 
 
+  return (
 
-<div
+    <DashboardLayout>
 
-className="
-grid
-grid-cols-1
-md:grid-cols-2
-xl:grid-cols-4
-gap-6
-"
 
->
+      <PageAnimation>
 
 
-<StatCard
+        <div
 
-title="Balance"
+          className="
+          space-y-8
+          "
 
-value={`$${data.savings}`}
+        >
 
-icon={<Wallet/>}
 
-type="blue"
 
-/>
+          {/* Header */}
 
+          <div>
 
 
-<StatCard
+            <h1
 
-title="Income"
+              className="
+              text-3xl
+              font-bold
+              "
 
-value={`$${data.income}`}
+            >
 
-icon={<TrendingUp/>}
+              Good morning{" "}
 
-type="green"
+              {
+                user?.name?.split(" ")[0]
+                ||
+                "there"
+              }
 
-/>
+              👋
 
 
+            </h1>
 
-<StatCard
 
-title="Expenses"
 
-value={`$${data.expenses}`}
+            <p
 
-icon={<TrendingDown/>}
+              className="
+              text-gray-500
+              mt-2
+              "
 
-type="red"
+            >
 
-/>
+              Here is your financial overview.
 
+            </p>
 
 
-<StatCard
+          </div>
 
-title="Savings"
 
-value={`$${data.savings}`}
 
-icon={<PiggyBank/>}
 
-type="purple"
 
-/>
 
 
 
-</div>
 
+          {/* Summary Cards */}
 
+          <div
 
+            className="
+            grid
+            grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-4
+            gap-6
+            "
 
+          >
 
 
 
+            <StatCard
 
-<div
+              title="Balance"
 
-className="
-grid
-xl:grid-cols-2
-gap-6
-"
+              value={
 
->
+                `$${
 
+                  data.balance ||
 
-<ExpensePieChart
+                  data.savings ||
 
-data={data.categoryExpenses}
+                  0
 
-/>
+                }`
 
+              }
 
-<IncomeExpenseChart
+              icon={<Wallet/>}
 
-income={data.income}
+              type="blue"
 
-expenses={data.expenses}
+            />
 
-/>
 
 
-</div>
 
 
+            <StatCard
 
+              title="Income"
 
+              value={
 
+                `$${data.income || 0}`
 
+              }
 
-<BudgetProgress
+              icon={<TrendingUp/>}
 
-budgets={data.budgets}
+              type="green"
 
-/>
+            />
 
 
 
 
 
+            <StatCard
 
+              title="Expenses"
 
-<div>
+              value={
 
+                `$${data.expenses || 0}`
 
-<h2
+              }
 
-className="
-text-xl
-font-bold
-mb-4
-"
+              icon={<TrendingDown/>}
 
->
+              type="red"
 
-Quick Actions
+            />
 
-</h2>
 
 
 
-<div
 
-className="
-grid
-md:grid-cols-3
-gap-5
-"
+            <StatCard
 
->
+              title="Savings"
 
+              value={
 
-<QuickAction
+                `$${data.savings || 0}`
 
-title="Add Expense"
+              }
 
-href="/transactions"
+              icon={<PiggyBank/>}
 
-icon="💸"
+              type="purple"
 
-/>
+            />
 
 
-<QuickAction
 
-title="View Reports"
+          </div>
 
-href="/reports"
 
-icon="📊"
 
-/>
 
 
-<QuickAction
 
-title="Savings Goals"
 
-href="/goals"
 
-icon="🎯"
 
-/>
+          {/* Charts */}
 
+          <div
 
-</div>
+            className="
+            grid
+            xl:grid-cols-2
+            gap-6
+            "
 
+          >
 
-</div>
 
 
+            <ExpensePieChart
 
+              data={
 
+                data.categoryExpenses || []
 
+              }
 
-</div>
+            />
 
 
-</PageAnimation>
 
+            <IncomeExpenseChart
 
-</DashboardLayout>
+              income={
 
-);
+                data.income || 0
+
+              }
+
+              expenses={
+
+                data.expenses || 0
+
+              }
+
+            />
+
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+          {/* Budgets */}
+
+          {
+
+            data.budgets &&
+
+            data.budgets.length > 0
+
+            &&
+
+
+            (
+
+              <BudgetProgress
+
+                budgets={data.budgets}
+
+              />
+
+            )
+
+          }
+
+
+
+
+
+
+
+
+
+
+          {/* Quick Actions */}
+
+          <div>
+
+
+            <h2
+
+              className="
+              text-xl
+              font-bold
+              mb-4
+              "
+
+            >
+
+              Quick Actions
+
+            </h2>
+
+
+
+
+            <div
+
+              className="
+              grid
+              md:grid-cols-3
+              gap-5
+              "
+
+            >
+
+
+
+              <QuickAction
+
+                title="Add Expense"
+
+                href="/transactions"
+
+                icon="💸"
+
+              />
+
+
+
+              <QuickAction
+
+                title="View Reports"
+
+                href="/reports"
+
+                icon="📊"
+
+              />
+
+
+
+              <QuickAction
+
+                title="Savings Goals"
+
+                href="/goals"
+
+                icon="🎯"
+
+              />
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+
+
+
+
+        </div>
+
+
+      </PageAnimation>
+
+
+    </DashboardLayout>
+
+  );
 
 }

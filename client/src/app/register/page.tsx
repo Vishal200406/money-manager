@@ -1,68 +1,215 @@
 "use client";
 
+
 import {
 useState
-} from "react";
+}
+from "react";
 
-import api from "@/lib/api";
 
 import {
 useRouter
-} from "next/navigation";
+}
+from "next/navigation";
+
+
+import AuthCard
+from "@/components/AuthCard";
+
+
+import Input
+from "@/components/ui/Input";
+
+
+import Select
+from "@/components/ui/Select";
+
+
+import Button
+from "@/components/ui/Button";
+
+
+import PasswordInput
+from "@/components/ui/PasswordInput";
+
+
+import api
+from "@/lib/api";
+
 
 
 export default function RegisterPage(){
 
-const router = useRouter();
+
+const router =
+useRouter();
 
 
-const [form,setForm]=useState({
+
+const [
+
+form,
+
+setForm
+
+]=useState({
 
 name:"",
+
 email:"",
+
 password:"",
-currency:"USD",
+
+confirmPassword:"",
+
+currency:"USD"
 
 });
 
 
-const [message,setMessage]=useState("");
+
+const [
+
+error,
+
+setError
+
+]=useState("");
 
 
 
-const handleSubmit = async(
+const [
+
+loading,
+
+setLoading
+
+]=useState(false);
+
+
+
+
+
+
+const submit = async(
+
 e:React.FormEvent
+
 )=>{
 
 
 e.preventDefault();
 
 
+
+setError("");
+
+
+
+
+if(
+
+form.password !==
+
+form.confirmPassword
+
+){
+
+
+setError(
+
+"Passwords do not match"
+
+);
+
+
+return;
+
+}
+
+
+
+
+
+if(
+
+form.password.length < 8
+
+){
+
+
+setError(
+
+"Password must be at least 8 characters"
+
+);
+
+
+return;
+
+}
+
+
+
+
+
 try{
 
 
+setLoading(true);
+
+
+
 await api.post(
+
 "/auth/register",
-form
+
+{
+
+name:form.name,
+
+email:form.email,
+
+password:form.password,
+
+currency:form.currency
+
+}
+
 );
 
 
-setMessage(
-"Account created successfully"
-);
 
 
 router.push(
+
 "/dashboard"
+
 );
 
 
 
-}catch(error){
+}
 
-setMessage(
+catch(error:any){
+
+
+setError(
+
+error.response?.data?.message ||
+
 "Registration failed"
+
 );
+
+
+}
+
+finally{
+
+
+setLoading(false);
+
 
 }
 
@@ -71,24 +218,32 @@ setMessage(
 
 
 
+
+
 return (
 
-<div>
+<AuthCard
 
+title="Create Account"
 
-<h1>
-Create Account
-</h1>
-
-
-<form
-onSubmit={handleSubmit}
 >
 
 
-<input
+<form
 
-placeholder="Name"
+onSubmit={submit}
+
+className="
+space-y-5
+"
+
+>
+
+
+
+<Input
+
+placeholder="Full name"
 
 value={form.name}
 
@@ -108,7 +263,9 @@ name:e.target.value
 
 
 
-<input
+
+
+<Input
 
 placeholder="Email"
 
@@ -133,13 +290,12 @@ email:e.target.value
 
 
 
-<input
 
-placeholder="Password"
-
-type="password"
+<PasswordInput
 
 value={form.password}
+
+placeholder="Password"
 
 onChange={(e)=>
 
@@ -157,7 +313,35 @@ password:e.target.value
 
 
 
-<select
+
+
+<PasswordInput
+
+value={form.confirmPassword}
+
+placeholder="Confirm Password"
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+confirmPassword:e.target.value
+
+})
+
+}
+
+/>
+
+
+
+
+
+
+
+<Select
 
 value={form.currency}
 
@@ -175,50 +359,91 @@ currency:e.target.value
 
 >
 
-
 <option value="USD">
-USD
+
+USD - US Dollar
+
 </option>
 
 
 <option value="CAD">
-CAD
+
+CAD - Canadian Dollar
+
 </option>
 
 
 <option value="GBP">
-GBP
+
+GBP - British Pound
+
 </option>
 
 
 <option value="INR">
-INR
+
+INR - Indian Rupee
+
 </option>
 
 
-</select>
+</Select>
 
 
 
 
-<button type="submit">
 
-Register
 
-</button>
+
+{
+
+error && (
+
+<p
+
+className="
+text-red-600
+text-sm
+"
+
+>
+
+{error}
+
+</p>
+
+)
+
+}
+
+
+
+
+
+<Button>
+
+{
+
+loading
+
+?
+
+"Creating Account..."
+
+:
+
+"Create Account"
+
+}
+
+</Button>
+
 
 
 </form>
 
 
-<p>
-
-{message}
-
-</p>
-
-
-</div>
+</AuthCard>
 
 );
 

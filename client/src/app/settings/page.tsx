@@ -12,6 +12,26 @@ useState
 from "react";
 
 
+import Card
+from "@/components/ui/Card";
+
+
+import Input
+from "@/components/ui/Input";
+
+
+import Select
+from "@/components/ui/Select";
+
+
+import Button
+from "@/components/ui/Button";
+
+
+import PageAnimation
+from "@/components/PageAnimation";
+
+
 import {
 
 getProfile,
@@ -23,226 +43,367 @@ updateProfile
 from "@/lib/userApi";
 
 
+import {
+
+useAuth
+
+}
+
+from "@/context/AuthContext";
+
+
 
 export default function SettingsPage(){
 
 
-const [
 
-profile,
+  const {
 
-setProfile
+    user,
 
-]=useState<any>(null);
+    refreshUser
 
+  } = useAuth();
 
 
-const [
 
-form,
 
-setForm
+  const [
 
-]=useState({
+    form,
 
-name:"",
+    setForm
 
-currency:"USD"
+  ] = useState({
 
-});
+    name:"",
 
+    currency:"USD"
 
+  });
 
 
-useEffect(()=>{
 
 
-getProfile()
 
-.then(
+  const [
 
-(data)=>{
+    loading,
 
+    setLoading
 
-setProfile(data);
+  ] = useState(false);
 
 
-setForm({
 
-name:data.name,
 
-currency:data.currency
 
-});
+  useEffect(()=>{
 
 
-}
+    if(user){
 
-);
 
+      setForm({
 
+        name:user.name,
 
-},[]);
+        currency:user.currency
 
+      });
 
 
+    }
 
-const save =
-async()=>{
 
+  },[user]);
 
-const updated =
-await updateProfile(
 
-form
 
-);
 
 
 
-setProfile(updated);
 
+  const save = async()=>{
 
 
-};
+    try{
 
 
+      setLoading(true);
 
 
-if(!profile){
 
-return (
+      await updateProfile(
 
-<p>
+        form
 
-Loading...
+      );
 
-</p>
 
-);
 
-}
+      await refreshUser();
 
 
 
-return (
+    }
 
-<div className="space-y-6">
+    catch(error){
 
 
-<h1 className="text-3xl font-bold">
+      console.error(
 
-Profile Settings
+        "Update failed",
 
-</h1>
+        error
 
+      );
 
 
-<div className="
-bg-white
-border
-rounded-xl
-p-6
-space-y-4
-">
+    }
 
+    finally{
 
-<input
 
-className="
-border
-rounded
-p-2
-"
+      setLoading(false);
 
-value={form.name}
 
-onChange={(e)=>
+    }
 
-setForm({
 
-...form,
+  };
 
-name:e.target.value
 
-})
 
-}
 
 
-/>
 
 
+  return (
 
-<select
+    <PageAnimation>
 
-className="
-border
-rounded
-p-2
-"
 
-value={form.currency}
+      <div
 
-onChange={(e)=>
+        className="
+        space-y-8
+        "
 
-setForm({
+      >
 
-...form,
 
-currency:e.target.value
 
-})
+        <div>
 
-}
 
->
+          <h1
 
-<option>
-USD
-</option>
+            className="
+            text-3xl
+            font-bold
+            "
 
-<option>
-CAD
-</option>
+          >
 
-<option>
-GBP
-</option>
+            Account Settings
 
-<option>
-INR
-</option>
+          </h1>
 
 
-</select>
 
+          <p
 
+            className="
+            text-gray-500
+            mt-2
+            "
 
-<button
+          >
 
-onClick={save}
+            Manage your profile and preferences.
 
-className="
-bg-blue-600
-text-white
-rounded
-p-2
-"
+          </p>
 
->
 
-Save Changes
+        </div>
 
-</button>
 
 
-</div>
 
 
 
-</div>
 
-);
+        <Card>
+
+
+
+          <h2
+
+            className="
+            text-xl
+            font-bold
+            mb-6
+            "
+
+          >
+
+            Profile Information
+
+          </h2>
+
+
+
+
+
+          <div
+
+            className="
+            space-y-5
+            "
+
+          >
+
+
+
+            <Input
+
+              placeholder="Name"
+
+              value={form.name}
+
+              onChange={(e)=>
+
+                setForm({
+
+                  ...form,
+
+                  name:e.target.value
+
+                })
+
+              }
+
+            />
+
+
+
+
+
+
+            <Input
+
+              value={user?.email || ""}
+
+              disabled
+
+            />
+
+
+
+
+
+
+
+            <Select
+
+              value={form.currency}
+
+              onChange={(e)=>
+
+                setForm({
+
+                  ...form,
+
+                  currency:e.target.value
+
+                })
+
+              }
+
+            >
+
+
+              <option value="USD">
+
+                USD - US Dollar
+
+              </option>
+
+
+              <option value="CAD">
+
+                CAD - Canadian Dollar
+
+              </option>
+
+
+              <option value="GBP">
+
+                GBP - British Pound
+
+              </option>
+
+
+              <option value="INR">
+
+                INR - Indian Rupee
+
+              </option>
+
+
+            </Select>
+
+
+
+
+
+
+
+
+            <Button
+
+              onClick={save}
+
+            >
+
+              {
+
+                loading
+
+                ?
+
+                "Saving..."
+
+                :
+
+                "Save Changes"
+
+              }
+
+            </Button>
+
+
+
+
+
+          </div>
+
+
+
+
+
+        </Card>
+
+
+
+
+
+      </div>
+
+
+    </PageAnimation>
+
+  );
 
 }

@@ -3,13 +3,14 @@
 
 import Link from "next/link";
 
+
 import {
-usePathname
+  usePathname
 } from "next/navigation";
 
 
 import {
-navigation
+  navigation
 } from "@/config/navigation";
 
 
@@ -17,308 +18,345 @@ import Avatar
 from "@/components/ui/Avatar";
 
 
+import {
+  useAuth
+} from "@/context/AuthContext";
+
+
 
 export default function Sidebar(){
 
 
-const pathname =
-usePathname();
+  const pathname =
+  usePathname();
 
 
 
-return (
+  const {
+    user
+  } = useAuth();
 
-<aside
 
-className="
-hidden
-md:flex
-flex-col
-w-72
-min-h-screen
-bg-white
-border-r
-p-6
-"
 
->
 
+  return (
 
-{/* Logo */}
+    <aside
 
-<div
+      className="
+      hidden
+      md:flex
+      flex-col
+      w-72
+      min-h-screen
+      bg-white
+      border-r
+      p-6
+      "
 
-className="
-flex
-items-center
-gap-3
-mb-10
-"
+    >
 
->
 
 
-<div
+      {/* Logo */}
 
-className="
-w-12
-h-12
-rounded-xl
-bg-primary
-text-white
-flex
-items-center
-justify-center
-text-2xl
-"
+      <div
 
->
+        className="
+        flex
+        items-center
+        gap-3
+        mb-10
+        "
 
-💰
+      >
 
-</div>
 
+        <div
 
+          className="
+          w-12
+          h-12
+          rounded-xl
+          bg-blue-600
+          text-white
+          flex
+          items-center
+          justify-center
+          text-2xl
+          "
 
-<div>
+        >
 
+          💰
 
-<h1
+        </div>
 
-className="
-font-bold
-text-xl
-"
 
->
 
-Money Manager
+        <div>
 
-</h1>
 
+          <h1
 
-<p
+            className="
+            font-bold
+            text-xl
+            "
 
-className="
-text-xs
-text-gray-500
-"
+          >
 
->
+            Money Manager
 
-Finance Dashboard
+          </h1>
 
-</p>
 
 
-</div>
+          <p
 
+            className="
+            text-xs
+            text-gray-500
+            "
 
-</div>
+          >
 
+            Finance Dashboard
 
+          </p>
 
 
 
-{/* Navigation */}
+        </div>
 
-<nav
 
-className="
-space-y-2
-flex-1
-"
+      </div>
 
->
 
 
-{
 
-navigation.map(
 
-(item)=>{
 
 
-const Icon =
-item.icon;
+      {/* Navigation */}
 
+      <nav
 
+        className="
+        space-y-2
+        flex-1
+        "
 
-const active =
-pathname === item.href;
+      >
 
 
+        {
 
-return (
+          navigation.map(
 
-<Link
+            (item)=>{
 
-key={item.href}
 
-href={item.href}
+              const Icon =
+              item.icon;
 
-className={`
 
-flex
 
-items-center
+              const active =
+              pathname === item.href;
 
-gap-3
 
-px-4
 
-py-3
+              return (
 
-rounded-xl
+                <Link
 
-transition
+                  key={item.href}
 
-${
+                  href={item.href}
 
-active
+                  className={`
 
-?
+                  flex
 
-"bg-primary text-white shadow-md"
+                  items-center
 
-:
+                  gap-3
 
-"text-gray-600 hover:bg-gray-100"
+                  px-4
 
-}
+                  py-3
 
-`}
+                  rounded-xl
 
->
+                  transition
 
+                  ${
+                    active
 
-<Icon
+                    ?
 
-size={20}
+                    "bg-blue-600 text-white shadow-md"
 
-/>
+                    :
 
+                    "text-gray-600 hover:bg-gray-100"
 
-<span>
+                  }
 
-{item.name}
+                  `}
 
-</span>
+                >
 
 
-</Link>
+                  <Icon
 
-);
+                    size={20}
 
+                  />
 
-}
 
-)
+                  <span>
 
-}
+                    {item.name}
 
+                  </span>
 
-</nav>
 
+                </Link>
 
+              );
 
 
+            }
 
+          )
 
-{/* User */}
+        }
 
-<div
 
-className="
-border-t
-pt-5
-mt-5
-"
+      </nav>
 
->
 
 
-<div
 
-className="
-flex
-items-center
-gap-3
-mb-4
-"
 
->
 
 
-<Avatar
 
-name="John Smith"
+      {/* User Profile */}
 
-/>
+      <div
 
+        className="
+        border-t
+        pt-5
+        mt-5
+        "
 
-<div>
+      >
 
 
-<p
 
-className="
-font-semibold
-"
+        <div
 
->
+          className="
+          flex
+          items-center
+          gap-3
+          mb-4
+          "
 
-John Smith
+        >
 
-</p>
 
+          <Avatar
 
-<p
+            name={
+              user?.name || "User"
+            }
 
-className="
-text-sm
-text-gray-500
-"
+          />
 
->
 
-USD Account
 
-</p>
+          <div>
 
 
-</div>
+            <p
 
+              className="
+              font-semibold
+              "
 
-</div>
+            >
 
+              {
+                user?.name || "User"
+              }
 
 
-<button
+            </p>
 
-className="
-w-full
-rounded-xl
-border
-py-2
-text-sm
-hover:bg-gray-100
-"
 
->
 
-Logout
+            <p
 
-</button>
+              className="
+              text-sm
+              text-gray-500
+              "
 
+            >
 
+              {
+                user?.currency || "USD"
+              }
 
-</div>
+              {" "}
 
+              Account
 
+            </p>
 
-</aside>
 
-);
+
+          </div>
+
+
+        </div>
+
+
+
+
+
+        <button
+
+          className="
+          w-full
+          rounded-xl
+          border
+          py-2
+          text-sm
+          hover:bg-gray-100
+          transition
+          "
+
+        >
+
+          Logout
+
+        </button>
+
+
+
+      </div>
+
+
+
+
+    </aside>
+
+  );
 
 }

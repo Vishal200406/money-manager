@@ -3,15 +3,30 @@
 
 import {
 useState
-} from "react";
-
-
-import api from "@/lib/api";
+}
+from "react";
 
 
 import {
 useRouter
-} from "next/navigation";
+}
+from "next/navigation";
+
+
+import AuthCard
+from "@/components/AuthCard";
+
+
+import Input
+from "@/components/ui/Input";
+
+
+import Button
+from "@/components/ui/Button";
+
+
+import api
+from "@/lib/api";
 
 
 
@@ -22,78 +37,114 @@ const router =
 useRouter();
 
 
+
 const [form,setForm]=useState({
 
 email:"",
-password:"",
+
+password:""
 
 });
 
 
-const [message,setMessage]=useState("");
+
+const [loading,setLoading]=useState(false);
 
 
 
-const handleSubmit = async(
+const [error,setError]=useState("");
+
+
+
+
+const submit=async(
+
 e:React.FormEvent
+
 )=>{
 
 
 e.preventDefault();
 
 
+
 try{
 
 
+setLoading(true);
+
+setError("");
+
+
+
 await api.post(
+
 "/auth/login",
+
 form
+
 );
+
 
 
 router.push(
+
 "/dashboard"
+
 );
 
 
 
-}catch(error){
+}
+
+catch(err:any){
 
 
-setMessage(
-"Invalid login details"
+setError(
+
+err.response?.data?.message ||
+
+"Login failed"
+
 );
 
 
 }
 
+finally{
+
+setLoading(false);
+
+}
 
 
 };
 
 
 
+
+
 return (
 
-<div>
-
-
-<h1>
-Login
-</h1>
-
+<AuthCard title="Login">
 
 
 <form
-onSubmit={handleSubmit}
+
+onSubmit={submit}
+
+className="
+space-y-5
+"
+
 >
 
 
-<input
-
-type="email"
+<Input
 
 placeholder="Email"
+
+type="email"
 
 value={form.email}
 
@@ -113,11 +164,12 @@ email:e.target.value
 
 
 
-<input
 
-type="password"
+<Input
 
 placeholder="Password"
+
+type="password"
 
 value={form.password}
 
@@ -137,22 +189,47 @@ password:e.target.value
 
 
 
-<button>
+{
 
-Login
+error &&
 
-</button>
+<p className="
+text-red-600
+text-sm
+">
+
+{error}
+
+</p>
+
+}
+
+
+
+<Button>
+
+{
+
+loading
+
+?
+
+"Logging in..."
+
+:
+
+"Login"
+
+}
+
+</Button>
+
 
 
 </form>
 
 
-<p>
-{message}
-</p>
-
-
-</div>
+</AuthCard>
 
 );
 
