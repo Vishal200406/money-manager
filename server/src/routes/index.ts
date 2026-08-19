@@ -21,6 +21,8 @@ import savingsGoalRoutes from "./savingsGoalRoutes";
 
 import notificationRoutes from "./notificationRoutes";
 
+import userRoutes from "./userRoutes";
+
 
 
 const router =
@@ -106,6 +108,12 @@ savingsGoalRoutes
 router.use(
 "/notifications",
 notificationRoutes
+);
+
+
+router.use(
+"/users",
+userRoutes
 );
 
 
