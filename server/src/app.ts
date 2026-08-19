@@ -1,60 +1,111 @@
 import express from "express";
+
 import cors from "cors";
+
 import helmet from "helmet";
+
 import cookieParser from "cookie-parser";
 
-import { env } from "./config/env";
+
+import {
+
+env
+
+}
+
+from "./config/env";
+
+
 import apiRoutes from "./routes";
 
 
-const app = express();
+import {
+
+apiLimiter
+
+}
+
+from "./middleware/rateLimiter";
 
 
-app.use(
-  helmet()
-);
+import {
+
+errorMiddleware
+
+}
+
+from "./middleware/errorMiddleware";
 
 
-app.use(
-  cors({
 
-    origin: env.CLIENT_URL,
+const app =
+express();
 
-    credentials: true,
-
-  })
-);
-
-
-app.use(
-  express.json()
-);
-
-
-app.use(
-  cookieParser()
-);
 
 
 app.use(
-  "/api",
-  apiRoutes
+
+helmet()
+
 );
 
 
-app.get(
-  "/",
-  (_req,res)=>{
 
-    res.json({
+app.use(
 
-      message:
-      "Money Manager API is running",
+cors({
 
-    });
+origin:
+env.CLIENT_URL,
 
-  }
+credentials:true,
+
+})
+
 );
+
+
+
+app.use(
+
+express.json()
+
+);
+
+
+
+app.use(
+
+cookieParser()
+
+);
+
+
+
+app.use(
+
+apiLimiter
+
+);
+
+
+
+app.use(
+
+"/api",
+
+apiRoutes
+
+);
+
+
+
+app.use(
+
+errorMiddleware
+
+);
+
 
 
 export default app;
