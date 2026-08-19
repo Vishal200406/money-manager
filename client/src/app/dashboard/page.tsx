@@ -7,32 +7,52 @@ useEffect,
 
 useState
 
-} from "react";
+}
+
+from "react";
+
+
+import {
+
+Wallet,
+
+TrendingUp,
+
+TrendingDown,
+
+PiggyBank
+
+}
+
+from "lucide-react";
 
 
 import DashboardLayout
-
 from "@/components/DashboardLayout";
 
 
-import SummaryCard
+import StatCard
+from "@/components/dashboard/StatCard";
 
-from "@/components/SummaryCard";
+
+import QuickAction
+from "@/components/dashboard/QuickAction";
+
+
+import BudgetProgress
+from "@/components/dashboard/BudgetProgress";
 
 
 import ExpensePieChart
-
 from "@/components/ExpensePieChart";
 
 
 import IncomeExpenseChart
-
 from "@/components/IncomeExpenseChart";
 
 
-import SavingsCard
-
-from "@/components/SavingsCard";
+import PageAnimation
+from "@/components/PageAnimation";
 
 
 import {
@@ -48,9 +68,13 @@ from "@/lib/analyticsApi";
 export default function DashboardPage(){
 
 
-const [data,setData]=
+const [
 
-useState<any>(null);
+data,
+
+setData
+
+]=useState<any>(null);
 
 
 
@@ -62,7 +86,6 @@ getDashboardAnalytics()
 .then(setData);
 
 
-
 },[]);
 
 
@@ -72,7 +95,7 @@ if(!data){
 
 return (
 
-<p>
+<p className="p-6">
 
 Loading dashboard...
 
@@ -89,71 +112,42 @@ return (
 <DashboardLayout>
 
 
+<PageAnimation>
+
+
+<div className="space-y-8">
+
+
+
+<div>
+
+
 <h1
 
 className="
 text-3xl
 font-bold
-mb-6
 "
 
 >
 
-Financial Dashboard
+Good morning 👋
 
 </h1>
 
 
-
-
-<div
+<p
 
 className="
-grid
-md:grid-cols-4
-gap-5
+text-gray-500
+mt-2
 "
 
 >
 
+Here is your financial overview.
 
-<SummaryCard
-
-title="Income"
-
-value={`$${data.income}`}
-
-/>
-
-
-
-<SummaryCard
-
-title="Expenses"
-
-value={`$${data.expenses}`}
-
-/>
-
-
-
-<SummaryCard
-
-title="Balance"
-
-value={`$${data.savings}`}
-
-/>
-
-
-
-<SavingsCard
-
-income={data.income}
-
-expenses={data.expenses}
-
-/>
+</p>
 
 
 </div>
@@ -162,13 +156,91 @@ expenses={data.expenses}
 
 
 
+
 <div
 
 className="
 grid
+grid-cols-1
 md:grid-cols-2
+xl:grid-cols-4
 gap-6
-mt-8
+"
+
+>
+
+
+<StatCard
+
+title="Balance"
+
+value={`$${data.savings}`}
+
+icon={<Wallet/>}
+
+type="blue"
+
+/>
+
+
+
+<StatCard
+
+title="Income"
+
+value={`$${data.income}`}
+
+icon={<TrendingUp/>}
+
+type="green"
+
+/>
+
+
+
+<StatCard
+
+title="Expenses"
+
+value={`$${data.expenses}`}
+
+icon={<TrendingDown/>}
+
+type="red"
+
+/>
+
+
+
+<StatCard
+
+title="Savings"
+
+value={`$${data.savings}`}
+
+icon={<PiggyBank/>}
+
+type="purple"
+
+/>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div
+
+className="
+grid
+xl:grid-cols-2
+gap-6
 "
 
 >
@@ -181,7 +253,6 @@ data={data.categoryExpenses}
 />
 
 
-
 <IncomeExpenseChart
 
 income={data.income}
@@ -191,9 +262,103 @@ expenses={data.expenses}
 />
 
 
+</div>
+
+
+
+
+
+
+
+<BudgetProgress
+
+budgets={data.budgets}
+
+/>
+
+
+
+
+
+
+
+<div>
+
+
+<h2
+
+className="
+text-xl
+font-bold
+mb-4
+"
+
+>
+
+Quick Actions
+
+</h2>
+
+
+
+<div
+
+className="
+grid
+md:grid-cols-3
+gap-5
+"
+
+>
+
+
+<QuickAction
+
+title="Add Expense"
+
+href="/transactions"
+
+icon="💸"
+
+/>
+
+
+<QuickAction
+
+title="View Reports"
+
+href="/reports"
+
+icon="📊"
+
+/>
+
+
+<QuickAction
+
+title="Savings Goals"
+
+href="/goals"
+
+icon="🎯"
+
+/>
+
 
 </div>
 
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+</PageAnimation>
 
 
 </DashboardLayout>
