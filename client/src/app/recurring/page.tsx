@@ -7,12 +7,40 @@ useEffect,
 
 useState
 
-} from "react";
+}
+
+from "react";
+
+
+import PageAnimation
+from "@/components/PageAnimation";
+
+
+import Card
+from "@/components/ui/Card";
+
+
+import Input
+from "@/components/ui/Input";
+
+
+import Select
+from "@/components/ui/Select";
+
+
+import Button
+from "@/components/ui/Button";
+
+
+import RecurringCard
+from "@/components/recurring/RecurringCard";
 
 
 import {
 
 getRecurring,
+
+createRecurring,
 
 deleteRecurring
 
@@ -21,48 +49,199 @@ deleteRecurring
 from "@/lib/recurringApi";
 
 
+import {
+
+getCategories
+
+}
+
+from "@/lib/categoryApi";
+
+
 
 export default function RecurringPage(){
 
 
+
 const [
-items,
-setItems
-]
-=
-useState<any[]>([]);
+
+payments,
+
+setPayments
+
+]=useState<any[]>([]);
 
 
 
-const load =
-async()=>{
+const [
+
+categories,
+
+setCategories
+
+]=useState<any[]>([]);
 
 
-const data =
-await getRecurring();
+
+const [
+
+form,
+
+setForm
+
+]=useState({
+
+name:"",
+
+amount:"",
+
+categoryId:"",
+
+frequency:"monthly",
+
+nextPayment:""
+
+});
 
 
-setItems(data);
+
+
+
+const loadData=async()=>{
+
+
+const [
+
+paymentData,
+
+categoryData
+
+]=await Promise.all([
+
+getRecurring(),
+
+getCategories()
+
+]);
+
+
+
+setPayments(paymentData);
+
+setCategories(categoryData);
 
 
 };
 
 
 
+
+
+
 useEffect(()=>{
 
-load();
+
+loadData();
+
 
 },[]);
 
 
 
+
+
+
+
+
+
+const submit=async()=>{
+
+
+await createRecurring({
+
+...form,
+
+amount:Number(form.amount)
+
+});
+
+
+
+setForm({
+
+name:"",
+
+amount:"",
+
+categoryId:"",
+
+frequency:"monthly",
+
+nextPayment:""
+
+});
+
+
+
+loadData();
+
+
+};
+
+
+
+
+
+
+
+const remove=async(
+
+id:string
+
+)=>{
+
+
+await deleteRecurring(id);
+
+
+loadData();
+
+
+};
+
+
+
+
+
+
+
 return (
 
-<div className="space-y-6">
+<PageAnimation>
 
 
-<h1 className="text-3xl font-bold">
+<div
+
+className="
+space-y-8
+"
+
+>
+
+
+
+
+<div>
+
+
+<h1
+
+className="
+text-3xl
+font-bold
+"
+
+>
 
 Recurring Payments
 
@@ -70,74 +249,155 @@ Recurring Payments
 
 
 
-{
+<p
 
-items.map(
+className="
+text-gray-500
+mt-2
+"
 
-(item)=>(
+>
+
+Manage your automatic monthly expenses.
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<Card>
+
+
+<h2
+
+className="
+text-xl
+font-bold
+mb-5
+"
+
+>
+
+Create Recurring Payment
+
+</h2>
+
+
+
 
 
 <div
 
-key={item._id}
-
 className="
-bg-white
-border
-rounded-xl
-p-5
-flex
-justify-between
+grid
+md:grid-cols-5
+gap-4
 "
 
 >
 
 
-<div>
+<Input
 
-<h2 className="font-bold">
+placeholder="Payment name"
 
-{item.description}
+value={form.name}
 
-</h2>
+onChange={(e)=>
 
+setForm({
 
-<p>
+...form,
 
-{item.currency}
+name:e.target.value
 
-{" "}
+})
 
-{item.amount}
+}
 
-</p>
-
-
-<p>
-
-Every {item.frequency}
-
-</p>
-
-
-</div>
+/>
 
 
 
-<button
 
-onClick={()=>deleteRecurring(item._id)}
 
-className="text-red-600"
+<Input
+
+placeholder="Amount"
+
+type="number"
+
+value={form.amount}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+amount:e.target.value
+
+})
+
+}
+
+/>
+
+
+
+
+
+<Select
+
+value={form.categoryId}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+categoryId:e.target.value
+
+})
+
+}
 
 >
 
-Delete
 
-</button>
+<option value="">
+
+Category
+
+</option>
 
 
-</div>
+
+{
+
+categories.map(
+
+(category)=>(
+
+
+<option
+
+key={category._id}
+
+value={category._id}
+
+>
+
+{category.name}
+
+</option>
 
 
 )
@@ -147,7 +407,232 @@ Delete
 }
 
 
+</Select>
+
+
+
+
+
+
+
+<Select
+
+value={form.frequency}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+frequency:e.target.value
+
+})
+
+}
+
+>
+
+
+<option value="monthly">
+
+Monthly
+
+</option>
+
+
+<option value="weekly">
+
+Weekly
+
+</option>
+
+
+<option value="yearly">
+
+Yearly
+
+</option>
+
+
+</Select>
+
+
+
+
+
+
+<Input
+
+type="date"
+
+value={form.nextPayment}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+nextPayment:e.target.value
+
+})
+
+}
+
+/>
+
+
+
+
+
+<Button
+
+onClick={submit}
+
+>
+
+Create
+
+</Button>
+
+
+
 </div>
+
+
+</Card>
+
+
+
+
+
+
+
+
+
+<div
+
+className="
+grid
+md:grid-cols-2
+gap-6
+"
+
+>
+
+
+{
+
+payments.length > 0
+
+?
+
+payments.map(
+
+(payment)=>(
+
+
+<RecurringCard
+
+key={payment._id}
+
+payment={payment}
+
+onDelete={remove}
+
+/>
+
+
+)
+
+)
+
+
+:
+
+(
+
+<Card>
+
+
+<div
+
+className="
+text-center
+py-10
+"
+
+>
+
+
+<div
+
+className="
+text-5xl
+"
+
+>
+
+🔄
+
+</div>
+
+
+
+<h3
+
+className="
+font-bold
+text-xl
+mt-4
+"
+
+>
+
+No recurring payments
+
+</h3>
+
+
+
+<p
+
+className="
+text-gray-500
+mt-2
+"
+
+>
+
+Add subscriptions and repeated bills.
+
+</p>
+
+
+</div>
+
+
+</Card>
+
+)
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+</PageAnimation>
 
 );
 

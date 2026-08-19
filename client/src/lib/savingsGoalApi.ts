@@ -1,37 +1,36 @@
 import api from "./api";
 
 
-export const getGoals =
-async()=>{
+
+export const getGoals = async()=>{
 
 
-const response =
-await api.get(
+const response = await api.get(
 
-"/goals"
+"/savings-goals"
 
 );
 
 
 return response.data;
 
+
 };
 
 
 
 
-export const createGoal =
-async(
+
+export const createGoal = async(
 
 data:any
 
 )=>{
 
 
-const response =
-await api.post(
+const response = await api.post(
 
-"/goals",
+"/savings-goals",
 
 data
 
@@ -40,13 +39,37 @@ data
 
 return response.data;
 
+
 };
 
 
 
 
-export const updateGoal =
-async(
+
+export const deleteGoal = async(
+
+id:string
+
+)=>{
+
+
+const response = await api.delete(
+
+`/savings-goals/${id}`
+
+);
+
+
+return response.data;
+
+
+};
+
+
+
+
+
+export const addMoney = async(
 
 id:string,
 
@@ -55,10 +78,9 @@ amount:number
 )=>{
 
 
-const response =
-await api.patch(
+const response = await api.patch(
 
-`/goals/${id}`,
+`/savings-goals/${id}/add-money`,
 
 {
 
@@ -71,27 +93,5 @@ amount
 
 return response.data;
 
-};
-
-
-
-
-export const deleteGoal =
-async(
-
-id:string
-
-)=>{
-
-
-const response =
-await api.delete(
-
-`/goals/${id}`
-
-);
-
-
-return response.data;
 
 };
