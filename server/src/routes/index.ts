@@ -15,6 +15,8 @@ import reportRoutes from "./reportRoutes";
 
 import currencyRoutes from "./currencyRoutes";
 
+import recurringRoutes from "./recurringRoutes";
+
 
 
 const router =
@@ -88,6 +90,13 @@ reportRoutes
 router.use(
 "/currency",
 currencyRoutes
+);
+
+
+
+router.use(
+"/recurring",
+recurringRoutes
 );
 
 
