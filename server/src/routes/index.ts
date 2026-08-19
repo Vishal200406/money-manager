@@ -1,8 +1,12 @@
 import { Router } from "express";
 
+
 import authRoutes from "./authRoutes";
 
 import transactionRoutes from "./transactionRoutes";
+
+import categoryRoutes from "./categoryRoutes";
+
 
 
 const router =
@@ -46,6 +50,16 @@ router.use(
 "/transactions",
 
 transactionRoutes
+
+);
+
+
+
+router.use(
+
+"/categories",
+
+categoryRoutes
 
 );
 
