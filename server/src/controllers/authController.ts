@@ -1,181 +1,337 @@
 import { Request, Response } from "express";
 
+
 import User from "../models/User";
 
+
 import {
+
   hashPassword,
+
   comparePassword,
+
 } from "../utils/password";
 
-import {
-  generateToken,
-} from "../utils/token";
 
 import {
+
+  generateToken,
+
+} from "../utils/token";
+
+
+import {
+
   createDefaultCategories,
+
 } from "../services/categoryService";
 
 
 
+
+
+
 const cookieOptions = {
-  httpOnly: true,
+
+
+  httpOnly:true,
+
 
   secure:
+
     process.env.NODE_ENV === "production",
 
-  sameSite: "lax" as const,
+
+  sameSite:
+
+    process.env.NODE_ENV === "production"
+
+      ? "none" as const
+
+      : "lax" as const,
+
+
 
   maxAge:
+
     7 * 24 * 60 * 60 * 1000,
 
+
 };
+
+
+
+
+
+
 
 
 
 // Register User
-export const register = async (
-  req: Request,
-  res: Response
-) => {
 
-  try {
+export const register = async(
 
-    const {
-      name,
-      email,
-      password,
-      currency,
-    } = req.body;
+req:Request,
+
+res:Response
+
+)=>{
 
 
+try{
 
-    if (
-      !name ||
-      !email ||
-      !password
-    ) {
 
-      return res.status(400).json({
+const {
 
-        message:
-          "Name, email and password are required",
+name,
 
-      });
+email,
 
-    }
+password,
+
+currency
+
+}
+
+=
+
+req.body;
 
 
 
-    const existingUser =
-      await User.findOne({
-        email,
-      });
 
 
 
-    if (existingUser) {
 
-      return res.status(400).json({
+if(
 
-        message:
-          "User already exists",
+!name ||
 
-      });
+!email ||
 
-    }
+!password
 
-
-
-    const hashedPassword =
-      await hashPassword(
-        password
-      );
+){
 
 
+return res.status(400).json({
 
-    const user =
-      await User.create({
+message:
 
-        name,
+"Name, email and password are required"
 
-        email,
+});
 
-        password:
-          hashedPassword,
 
-        currency:
-          currency || "USD",
-
-      });
+}
 
 
 
-    // Create default categories
-    await createDefaultCategories(
-      user._id.toString()
-    );
 
 
 
-    const token =
-      generateToken(
-        user._id.toString()
-      );
 
 
 
-    res.cookie(
-      "token",
-      token,
-      cookieOptions
-    );
+const existingUser =
+
+await User.findOne({
+
+email
+
+});
 
 
 
-    return res.status(201).json({
-
-      message:
-        "Account created successfully",
-
-
-      user: {
-
-        id:
-          user._id,
-
-        name:
-          user.name,
-
-        email:
-          user.email,
-
-        currency:
-          user.currency,
-
-      },
-
-    });
 
 
 
-  } catch (error) {
 
-    console.error(
-      "Registration error:",
-      error
-    );
+if(existingUser){
 
 
-    return res.status(500).json({
+return res.status(400).json({
 
-      message:
-        "Registration failed",
+message:
 
-    });
+"User already exists"
 
-  }
+});
+
+
+}
+
+
+
+
+
+
+
+
+
+const hashedPassword =
+
+await hashPassword(password);
+
+
+
+
+
+
+
+
+
+const user =
+
+await User.create({
+
+
+name,
+
+
+email,
+
+
+password:
+
+hashedPassword,
+
+
+currency:
+
+currency || "USD"
+
+
+
+});
+
+
+
+
+
+
+
+
+
+await createDefaultCategories(
+
+user._id.toString()
+
+);
+
+
+
+
+
+
+
+
+
+const token =
+
+generateToken(
+
+user._id.toString()
+
+);
+
+
+
+
+
+
+
+
+
+res.cookie(
+
+"token",
+
+token,
+
+cookieOptions
+
+);
+
+
+
+
+
+
+
+
+
+return res.status(201).json({
+
+
+message:
+
+"Account created successfully",
+
+
+
+user:{
+
+
+id:user._id,
+
+
+name:user.name,
+
+
+email:user.email,
+
+
+currency:user.currency
+
+
+
+}
+
+
+
+});
+
+
+
+
+
+
+
+}
+
+catch(error){
+
+
+
+console.error(
+
+"Registration error:",
+
+error
+
+);
+
+
+
+
+
+return res.status(500).json({
+
+message:
+
+"Registration failed"
+
+});
+
+
+}
+
+
 
 };
+
+
 
 
 
@@ -184,146 +340,244 @@ export const register = async (
 
 
 // Login User
-export const login = async (
-  req: Request,
-  res: Response
-) => {
 
-  try {
+export const login = async(
 
+req:Request,
 
-    const {
-      email,
-      password,
-    } = req.body;
+res:Response
 
+)=>{
 
 
-    if (
-      !email ||
-      !password
-    ) {
+try{
 
-      return res.status(400).json({
 
-        message:
-          "Email and password are required",
+const {
 
-      });
+email,
 
-    }
+password
 
+}
 
+=
 
-    const user =
-      await User.findOne({
+req.body;
 
-        email,
 
-      });
 
 
 
-    if (!user) {
 
-      return res.status(400).json({
 
-        message:
-          "Invalid credentials",
+if(
 
-      });
+!email ||
 
-    }
+!password
 
+){
 
 
-    const passwordMatch =
-      await comparePassword(
+return res.status(400).json({
 
-        password,
+message:
 
-        user.password
+"Email and password are required"
 
-      );
+});
 
 
+}
 
-    if (!passwordMatch) {
 
-      return res.status(400).json({
 
-        message:
-          "Invalid credentials",
 
-      });
 
-    }
 
 
 
-    const token =
-      generateToken(
-        user._id.toString()
-      );
 
+const user =
 
+await User.findOne({
 
-    res.cookie(
+email
 
-      "token",
+});
 
-      token,
 
-      cookieOptions
 
-    );
 
 
 
-    return res.status(200).json({
 
-      message:
-        "Login successful",
 
 
-      user: {
+if(!user){
 
-        id:
-          user._id,
 
-        name:
-          user.name,
+return res.status(400).json({
 
-        email:
-          user.email,
+message:
 
-        currency:
-          user.currency,
+"Invalid credentials"
 
-      },
+});
 
-    });
 
+}
 
 
-  } catch (error) {
 
 
-    console.error(
-      "Login error:",
-      error
-    );
 
 
 
-    return res.status(500).json({
 
-      message:
-        "Login failed",
 
-    });
+const passwordMatch =
 
-  }
+await comparePassword(
+
+password,
+
+user.password
+
+);
+
+
+
+
+
+
+
+
+
+if(!passwordMatch){
+
+
+return res.status(400).json({
+
+message:
+
+"Invalid credentials"
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+
+const token =
+
+generateToken(
+
+user._id.toString()
+
+);
+
+
+
+
+
+
+
+
+
+res.cookie(
+
+"token",
+
+token,
+
+cookieOptions
+
+);
+
+
+
+
+
+
+
+
+
+return res.status(200).json({
+
+
+message:
+
+"Login successful",
+
+
+
+user:{
+
+
+id:user._id,
+
+
+name:user.name,
+
+
+email:user.email,
+
+
+currency:user.currency
+
+
+
+}
+
+
+
+});
+
+
+
+
+
+
+
+}
+
+catch(error){
+
+
+
+console.error(
+
+"Login error:",
+
+error
+
+);
+
+
+
+
+
+return res.status(500).json({
+
+message:
+
+"Login failed"
+
+});
+
+
+}
+
+
 
 };
 
@@ -333,23 +587,81 @@ export const login = async (
 
 
 
+
+
 // Logout User
-export const logout = async (
-  _req: Request,
-  res: Response
-) => {
 
-  res.clearCookie(
-    "token",
-    cookieOptions
-  );
+export const logout = async(
+
+_req:Request,
+
+res:Response
+
+)=>{
 
 
-  return res.status(200).json({
+try{
 
-    message:
-      "Logout successful",
 
-  });
+
+res.clearCookie(
+
+"token",
+
+{
+
+
+...cookieOptions,
+
+
+maxAge:0
+
+
+}
+
+);
+
+
+
+
+
+
+
+return res.status(200).json({
+
+message:
+
+"Logout successful"
+
+});
+
+
+}
+
+catch(error){
+
+
+console.error(
+
+"Logout error:",
+
+error
+
+);
+
+
+
+return res.status(500).json({
+
+message:
+
+"Logout failed"
+
+});
+
+
+}
+
+
 
 };
