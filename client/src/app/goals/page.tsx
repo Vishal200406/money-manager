@@ -12,11 +12,37 @@ useState
 from "react";
 
 
+
+import PageAnimation
+from "@/components/PageAnimation";
+
+
+import Card
+from "@/components/ui/Card";
+
+
+import Input
+from "@/components/ui/Input";
+
+
+import Button
+from "@/components/ui/Button";
+
+
+import GoalCard
+from "@/components/goals/GoalCard";
+
+
+
 import {
 
 getGoals,
 
-deleteGoal
+createGoal,
+
+deleteGoal,
+
+addMoney
 
 }
 
@@ -25,6 +51,7 @@ from "@/lib/savingsGoalApi";
 
 
 export default function GoalsPage(){
+
 
 
 const [
@@ -37,11 +64,31 @@ setGoals
 
 
 
-const loadGoals =
-async()=>{
+const [
+
+form,
+
+setForm
+
+]=useState({
+
+name:"",
+
+targetAmount:"",
+
+deadline:""
+
+});
 
 
-const data =
+
+
+
+const loadGoals=async()=>{
+
+
+const data=
+
 await getGoals();
 
 
@@ -52,20 +99,157 @@ setGoals(data);
 
 
 
+
+
 useEffect(()=>{
 
+
 loadGoals();
+
 
 },[]);
 
 
 
+
+
+
+
+
+const submit=async()=>{
+
+
+await createGoal({
+
+name:
+
+form.name,
+
+
+targetAmount:
+
+Number(form.targetAmount),
+
+
+deadline:
+
+form.deadline
+
+
+});
+
+
+
+setForm({
+
+name:"",
+
+targetAmount:"",
+
+deadline:""
+
+});
+
+
+loadGoals();
+
+
+};
+
+
+
+
+
+
+
+const remove=async(
+
+id:string
+
+)=>{
+
+
+await deleteGoal(id);
+
+
+loadGoals();
+
+
+};
+
+
+
+
+
+
+const contribute=async(
+
+goal:any
+
+)=>{
+
+
+const amount=
+
+prompt(
+
+"Enter amount to add"
+
+);
+
+
+
+if(!amount)return;
+
+
+
+await addMoney(
+
+goal._id,
+
+Number(amount)
+
+);
+
+
+
+loadGoals();
+
+
+};
+
+
+
+
+
+
+
 return (
 
-<div className="space-y-6">
+<PageAnimation>
 
 
-<h1 className="text-3xl font-bold">
+<div
+
+className="
+space-y-8
+"
+
+>
+
+
+
+<div>
+
+
+<h1
+
+className="
+text-3xl
+font-bold
+"
+
+>
 
 Savings Goals
 
@@ -73,145 +257,285 @@ Savings Goals
 
 
 
+<p
+
+className="
+text-gray-500
+mt-2
+"
+
+>
+
+Track your progress toward important milestones.
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<Card>
+
+
+<h2
+
+className="
+text-xl
+font-bold
+mb-5
+"
+
+>
+
+Create Goal
+
+</h2>
+
+
+
+
+
+<div
+
+className="
+grid
+md:grid-cols-4
+gap-4
+"
+
+>
+
+
+
+<Input
+
+placeholder="Goal name"
+
+value={form.name}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+name:e.target.value
+
+})
+
+}
+
+/>
+
+
+
+
+
+<Input
+
+placeholder="Target amount"
+
+type="number"
+
+value={form.targetAmount}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+targetAmount:e.target.value
+
+})
+
+}
+
+/>
+
+
+
+
+
+<Input
+
+type="date"
+
+value={form.deadline}
+
+onChange={(e)=>
+
+setForm({
+
+...form,
+
+deadline:e.target.value
+
+})
+
+}
+
+/>
+
+
+
+
+
+
+<Button
+
+onClick={submit}
+
+>
+
+Create Goal
+
+</Button>
+
+
+
+</div>
+
+
+</Card>
+
+
+
+
+
+
+
+
+
+<div
+
+className="
+grid
+md:grid-cols-2
+gap-6
+"
+
+>
+
+
 {
+
+goals.length > 0
+
+?
 
 goals.map(
 
 (goal)=>(
 
 
-<div
+<GoalCard
 
 key={goal._id}
 
-className="
-bg-white
-border
-rounded-xl
-p-6
-"
+goal={goal}
 
->
+onDelete={remove}
 
-
-<h2 className="font-bold text-xl">
-
-{goal.name}
-
-</h2>
-
-
-
-<p>
-
-Saved:
-
-{goal.currency}
-
-{" "}
-
-{goal.currentAmount}
-
-</p>
-
-
-
-<p>
-
-Target:
-
-{goal.currency}
-
-{" "}
-
-{goal.targetAmount}
-
-</p>
-
-
-
-
-<div
-
-className="
-w-full
-bg-gray-200
-rounded-full
-h-3
-mt-4
-"
-
->
-
-
-<div
-
-className="
-bg-blue-600
-h-3
-rounded-full
-"
-
-style={{
-
-width:
-
-`${
-
-Math.min(
-
-(goal.currentAmount /
-
-goal.targetAmount)
-
-*
-
-100,
-
-100
-
-)
-
-}%`
-
-}}
-
+onAddMoney={contribute}
 
 />
 
 
+)
+
+)
+
+
+:
+
+(
+
+<Card>
+
+
+<div
+
+className="
+text-center
+py-10
+"
+
+>
+
+
+<div
+
+className="
+text-5xl
+"
+
+>
+
+🎯
+
 </div>
 
 
 
-<button
-
-onClick={()=>deleteGoal(goal._id)}
+<h3
 
 className="
-text-red-600
+text-xl
+font-bold
 mt-4
 "
 
 >
 
-Delete
+No savings goals yet
 
-</button>
+</h3>
+
+
+
+<p
+
+className="
+text-gray-500
+mt-2
+"
+
+>
+
+Create your first financial goal.
+
+</p>
+
 
 
 </div>
 
 
-)
+</Card>
 
 )
 
 }
 
 
+</div>
+
+
+
+
 
 </div>
+
+
+</PageAnimation>
 
 );
 
