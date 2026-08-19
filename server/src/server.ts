@@ -1,17 +1,8 @@
-import express from "express";
+import app from "./app";
+import { env } from "./config/env";
 
-const app = express();
-
-const PORT = 5000;
-
-app.use(express.json());
-
-app.get("/", (_req, res) => {
-  res.json({
-    message: "Money Manager API is running",
-  });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(env.PORT, () => {
+  console.log(
+    `Server running on http://localhost:${env.PORT}`
+  );
 });
