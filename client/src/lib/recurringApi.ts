@@ -1,21 +1,25 @@
 import api from "./api";
 
 
+
 export const getRecurring =
 async()=>{
 
 
-const response =
-await api.get(
+  const response =
+    await api.get(
 
-"/recurring"
+      "/recurring"
 
-);
+    );
 
 
-return response.data;
+  return response.data;
 
 };
+
+
+
 
 
 
@@ -23,24 +27,51 @@ return response.data;
 export const createRecurring =
 async(
 
-data:any
+  data:any
 
 )=>{
 
 
-const response =
-await api.post(
+  const response =
 
-"/recurring",
+    await api.post(
 
-data
+      "/recurring",
 
-);
+      {
+
+        name:data.name,
 
 
-return response.data;
+        amount:Number(data.amount),
+
+
+        categoryId:data.categoryId,
+
+
+        type:"expense",
+
+
+        frequency:data.frequency,
+
+
+        nextDate:data.nextPayment,
+
+
+      }
+
+    );
+
+
+
+  return response.data;
+
 
 };
+
+
+
+
 
 
 
@@ -48,19 +79,21 @@ return response.data;
 export const deleteRecurring =
 async(
 
-id:string
+  id:string
 
 )=>{
 
 
-const response =
-await api.delete(
+  const response =
 
-`/recurring/${id}`
+    await api.delete(
 
-);
+      `/recurring/${id}`
+
+    );
 
 
-return response.data;
+  return response.data;
+
 
 };
