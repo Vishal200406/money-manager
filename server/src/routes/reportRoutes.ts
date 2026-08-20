@@ -3,16 +3,21 @@ import express from "express";
 
 import {
 
-getReports
+  getReports,
+
+  exportPDF,
+
+  exportExcel
 
 }
 
 from "../controllers/reportController";
 
 
+
 import {
 
-protect
+  protect
 
 }
 
@@ -20,19 +25,50 @@ from "../middleware/authMiddleware";
 
 
 
+
 const router = express.Router();
+
 
 
 
 router.get(
 
-"/",
+  "/",
 
-protect,
+  protect,
 
-getReports
+  getReports
 
 );
+
+
+
+
+
+router.get(
+
+  "/export/pdf",
+
+  protect,
+
+  exportPDF
+
+);
+
+
+
+
+
+router.get(
+
+  "/export/excel",
+
+  protect,
+
+  exportExcel
+
+);
+
 
 
 
