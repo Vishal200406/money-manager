@@ -1,162 +1,269 @@
+"use client";
+
+
 import Progress
 from "@/components/ui/Progress";
 
 
+
 interface Props {
 
-budgets:any[];
+  budgets:any[];
 
 }
+
+
 
 
 
 export default function BudgetProgress({
 
-budgets
+  budgets
 
 }:Props){
 
 
 
-return (
+  return (
 
-<div
 
-className="
-bg-white
-rounded-2xl
-border
-shadow-card
-p-6
-"
 
->
+    <div
 
+      className="
+      bg-white
+      rounded-2xl
+      border
+      shadow-card
+      p-6
+      "
 
-<h2
+    >
 
-className="
-text-xl
-font-bold
-mb-5
-"
 
->
 
-Budget Overview
 
-</h2>
 
+      <h2
 
+        className="
+        text-xl
+        font-bold
+        mb-5
+        "
 
-<div className="
-space-y-5
-">
+      >
 
+        Budget Overview
 
-{
 
-budgets.map(
+      </h2>
 
-(budget)=>(
 
 
-<div
 
-key={budget._id}
 
->
 
 
-<div className="
-flex
-justify-between
-mb-2
-"
+      <div
 
->
+        className="
+        space-y-5
+        "
 
+      >
 
-<span>
 
-{
 
-budget.categoryId?.name
 
-}
 
-</span>
+        {
 
 
-<span
+          budgets.map(
 
-className="
-text-sm
-text-gray-500
-"
 
->
+            (budget)=>(
 
-{
 
-Math.round(
 
-(budget.spent /
+              <div
 
-budget.limit)
+                key={budget._id}
 
-*
+              >
 
-100
 
-)
 
-}%
 
-</span>
 
+                <div
 
-</div>
+                  className="
+                  flex
+                  justify-between
+                  mb-2
+                  "
 
+                >
 
 
-<Progress
 
-value={
 
-(
 
-budget.spent /
+                  <span>
 
-budget.limit
+                    {
+                      budget.categoryId?.name ||
+                      "Category"
+                    }
 
-)
 
-*
+                  </span>
 
-100
 
-}
 
-/>
 
 
-</div>
 
 
-)
+                  <span
 
-)
+                    className="
+                    text-sm
+                    text-gray-500
+                    "
 
-}
+                  >
 
 
-</div>
 
+                    {
 
+                      Math.round(
 
-</div>
+                        Number(
 
-);
+                          budget.percentage ||
+
+                          (
+
+                            budget.amount > 0
+
+                            ?
+
+                            (
+
+                              budget.spent /
+
+                              budget.amount
+
+                            ) * 100
+
+                            :
+
+                            0
+
+                          )
+
+                        )
+
+                      )
+
+                    }%
+
+
+
+                  </span>
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+                <Progress
+
+
+                  value={
+
+                    Math.min(
+
+                      Number(
+
+                        budget.percentage ||
+
+                        (
+
+                          budget.amount > 0
+
+                          ?
+
+                          (
+
+                            budget.spent /
+
+                            budget.amount
+
+                          ) * 100
+
+                          :
+
+                          0
+
+                        )
+
+                      ),
+
+                      100
+
+                    )
+
+                  }
+
+
+                />
+
+
+
+
+
+              </div>
+
+
+
+            )
+
+
+          )
+
+
+
+        }
+
+
+
+
+
+      </div>
+
+
+
+
+
+    </div>
+
+
+
+  );
+
 
 }
