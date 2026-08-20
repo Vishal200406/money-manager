@@ -21,6 +21,9 @@ export const getBudgets = async()=>{
 
 
 
+
+
+
 export const createBudget = async(
 
   data:any
@@ -32,19 +35,36 @@ export const createBudget = async(
 
 
 
+
   const response = await api.post(
 
     "/budgets",
 
     {
 
-      categoryId:data.categoryId,
 
-      amount:Number(data.limit),
+      categoryId:
 
-      month:now.getMonth()+1,
+        data.categoryId,
 
-      year:now.getFullYear()
+
+
+      amount:
+
+        Number(data.amount),
+
+
+
+      month:
+
+        now.getMonth() + 1,
+
+
+
+      year:
+
+        now.getFullYear()
+
 
     }
 
@@ -56,6 +76,10 @@ export const createBudget = async(
 
 
 };
+
+
+
+
 
 
 
@@ -73,6 +97,7 @@ export const deleteBudget = async(
     `/budgets/${id}`
 
   );
+
 
 
   return response.data;
