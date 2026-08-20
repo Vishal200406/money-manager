@@ -1,71 +1,155 @@
 import api from "./api";
 
 
-export const getReports = async(
 
-period:string
+export const getReports = async (
+
+  period:string
 
 )=>{
 
 
-const response =
+  const response = await api.get(
 
-await api.get(
+    `/reports?period=${period}`
 
-`/reports?period=${period}`
-
-);
+  );
 
 
-return response.data;
+  return response.data;
 
 
 };
 
 
 
-export const exportPDF = async(
 
-period:string
+
+
+
+const downloadFile = (
+
+  blob:any,
+
+  filename:string
 
 )=>{
 
 
-return api.get(
+  const url = window.URL.createObjectURL(
 
-`/reports/export/pdf?period=${period}`,
+    blob
 
-{
+  );
 
-responseType:"blob"
 
-}
 
-);
+  const link = document.createElement(
+
+    "a"
+
+  );
+
+
+  link.href = url;
+
+
+  link.download = filename;
+
+
+
+  document.body.appendChild(link);
+
+
+
+  link.click();
+
+
+
+  link.remove();
+
+
+
+  window.URL.revokeObjectURL(url);
+
 
 
 };
 
 
 
-export const exportExcel = async(
 
-period:string
+
+
+
+
+export const exportPDF = async (
+
+  period:string
 
 )=>{
 
 
-return api.get(
+  const response = await api.get(
 
-`/reports/export/excel?period=${period}`,
+    `/reports/export/pdf?period=${period}`,
 
-{
+    {
 
-responseType:"blob"
+      responseType:"blob"
 
-}
+    }
 
-);
+  );
+
+
+
+  downloadFile(
+
+    response.data,
+
+    `financial-report-${period}.pdf`
+
+  );
+
+
+};
+
+
+
+
+
+
+
+
+export const exportExcel = async (
+
+  period:string
+
+)=>{
+
+
+  const response = await api.get(
+
+    `/reports/export/excel?period=${period}`,
+
+    {
+
+      responseType:"blob"
+
+    }
+
+  );
+
+
+
+  downloadFile(
+
+    response.data,
+
+    `financial-report-${period}.xlsx`
+
+  );
 
 
 };
