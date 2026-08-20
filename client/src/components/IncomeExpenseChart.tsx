@@ -3,19 +3,19 @@
 
 import {
 
-BarChart,
+  BarChart,
 
-Bar,
+  Bar,
 
-XAxis,
+  XAxis,
 
-YAxis,
+  YAxis,
 
-Tooltip,
+  Tooltip,
 
-Legend,
+  Legend,
 
-ResponsiveContainer
+  ResponsiveContainer
 
 } from "recharts";
 
@@ -23,127 +23,191 @@ ResponsiveContainer
 
 interface Props {
 
-income:number;
+  income:number;
 
-expenses:number;
+  expenses:number;
 
 }
+
+
 
 
 
 export default function IncomeExpenseChart({
 
-income,
+  income,
 
-expenses
+  expenses
 
 }:Props){
 
 
-const data=[
 
-{
-
-name:"Money",
-
-income,
-
-expenses,
-
-}
-
-];
+  const data=[
 
 
+    {
 
-return (
+      name:"Money",
 
-<div
+      income,
 
-className="
-bg-white
-border
-rounded-xl
-p-6
-h-96
-"
+      expenses,
 
->
+    }
 
 
-<h2
-
-className="
-text-xl
-font-semibold
-mb-4
-"
-
->
-
-Income vs Expenses
-
-</h2>
+  ];
 
 
 
-<ResponsiveContainer
-
-width="100%"
-
-height="85%"
-
->
 
 
-<BarChart
-
-data={data}
-
->
-
-
-<XAxis
-
-dataKey="name"
-
-/>
-
-
-<YAxis />
-
-
-<Tooltip />
-
-
-<Legend />
+  return (
 
 
 
-<Bar
+    <div
 
-dataKey="income"
+      className="
+      bg-white
+      border
+      rounded-xl
+      p-6
+      h-96
+      "
 
-/>
-
-
-
-<Bar
-
-dataKey="expenses"
-
-/>
+    >
 
 
 
-</BarChart>
 
 
-</ResponsiveContainer>
+      <h2
+
+        className="
+        text-xl
+        font-semibold
+        mb-4
+        "
+
+      >
+
+        Income vs Expenses
 
 
-</div>
+      </h2>
 
-);
+
+
+
+
+
+
+      <ResponsiveContainer
+
+        width="100%"
+
+        height="85%"
+
+      >
+
+
+
+
+
+        <BarChart
+
+          data={data}
+
+        >
+
+
+
+
+
+          <XAxis
+
+            dataKey="name"
+
+          />
+
+
+
+
+
+          <YAxis />
+
+
+
+
+
+          <Tooltip />
+
+
+
+
+
+          <Legend />
+
+
+
+
+
+
+
+
+
+          <Bar
+
+            dataKey="income"
+
+            fill="#16a34a"
+
+            name="Income"
+
+          />
+
+
+
+
+
+
+
+          <Bar
+
+            dataKey="expenses"
+
+            fill="#dc2626"
+
+            name="Expenses"
+
+          />
+
+
+
+
+
+
+
+        </BarChart>
+
+
+
+
+
+
+      </ResponsiveContainer>
+
+
+
+
+
+
+    </div>
+
+
+
+  );
 
 }
