@@ -43,8 +43,7 @@ export default function IncomeExpenseChart({
 
 
 
-  const data=[
-
+  const data = [
 
     {
 
@@ -56,7 +55,6 @@ export default function IncomeExpenseChart({
 
     }
 
-
   ];
 
 
@@ -64,7 +62,6 @@ export default function IncomeExpenseChart({
 
 
   return (
-
 
 
     <div
@@ -78,8 +75,6 @@ export default function IncomeExpenseChart({
       "
 
     >
-
-
 
 
 
@@ -115,7 +110,6 @@ export default function IncomeExpenseChart({
 
 
 
-
         <BarChart
 
           data={data}
@@ -134,17 +128,11 @@ export default function IncomeExpenseChart({
 
 
 
-
-
           <YAxis />
 
 
 
-
-
           <Tooltip />
-
-
 
 
 
@@ -156,15 +144,15 @@ export default function IncomeExpenseChart({
 
 
 
-
-
           <Bar
 
             dataKey="income"
 
+            name="Income"
+
             fill="#16a34a"
 
-            name="Income"
+            isAnimationActive={true}
 
           />
 
@@ -178,13 +166,13 @@ export default function IncomeExpenseChart({
 
             dataKey="expenses"
 
-            fill="#dc2626"
-
             name="Expenses"
 
+            fill="#dc2626"
+
+            isAnimationActive={true}
+
           />
-
-
 
 
 
@@ -196,9 +184,7 @@ export default function IncomeExpenseChart({
 
 
 
-
       </ResponsiveContainer>
-
 
 
 
@@ -209,5 +195,6 @@ export default function IncomeExpenseChart({
 
 
   );
+
 
 }
