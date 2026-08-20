@@ -2,14 +2,9 @@
 
 
 import {
-
-useEffect,
-
-useState
-
-}
-
-from "react";
+  useEffect,
+  useState
+} from "react";
 
 
 import PageAnimation
@@ -37,24 +32,16 @@ from "@/components/budgets/BudgetCard";
 
 
 import {
-
-getBudgets,
-
-createBudget,
-
-deleteBudget
-
+  getBudgets,
+  createBudget,
+  deleteBudget
 }
-
 from "@/lib/budgetApi";
 
 
 import {
-
-getCategories
-
+  getCategories
 }
-
 from "@/lib/categoryApi";
 
 
@@ -64,347 +51,347 @@ from "@/lib/categoryApi";
 export default function BudgetsPage(){
 
 
+  const [
+    budgets,
+    setBudgets
+  ] = useState<any[]>([]);
 
-const [
 
-budgets,
 
-setBudgets
+  const [
+    categories,
+    setCategories
+  ] = useState<any[]>([]);
 
-]=useState<any[]>([]);
 
 
+  const [
+    loading,
+    setLoading
+  ] = useState(true);
 
-const [
 
-categories,
 
-setCategories
+  const [
+    error,
+    setError
+  ] = useState("");
 
-]=useState<any[]>([]);
 
 
 
-const [
 
-loading,
+  const [
+    form,
+    setForm
+  ] = useState({
 
-setLoading
+    categoryId:"",
+    limit:""
 
-]=useState(true);
+  });
 
 
 
-const [
 
-error,
 
-setError
 
-]=useState("");
 
+  const loadData = async()=>{
 
 
+    try{
 
 
-const [
+      setLoading(true);
 
-form,
+      setError("");
 
-setForm
 
-]=useState({
 
-categoryId:"",
+      const [
 
-limit:""
+        budgetData,
 
-});
+        categoryData
 
+      ] = await Promise.all([
 
 
+        getBudgets(),
 
 
+        getCategories()
 
 
+      ]);
 
 
-const loadData = async()=>{
 
+      setBudgets(
 
-try{
+        budgetData || []
 
+      );
 
-setLoading(true);
 
-setError("");
 
+      setCategories(
 
+        categoryData || []
 
-const [
+      );
 
-budgetData,
 
-categoryData
 
-]=await Promise.all([
+    }
 
-getBudgets(),
+    catch(err:any){
 
-getCategories()
 
-]);
+      console.error(
 
+        "Loading budgets failed",
 
+        err
 
-setBudgets(
+      );
 
-budgetData || []
 
-);
 
+      setError(
 
+        err?.response?.data?.message ||
 
-setCategories(
+        "Unable to load budgets"
 
-categoryData || []
+      );
 
-);
 
+    }
 
+    finally{
 
-}
 
-catch(err:any){
+      setLoading(false);
 
 
-console.error(
+    }
 
-"Loading budgets failed",
 
-err
 
-);
+  };
 
 
 
-setError(
 
-err?.response?.data?.message ||
 
-"Unable to load budgets"
 
-);
 
 
-}
+  useEffect(()=>{
 
-finally{
 
+    loadData();
 
-setLoading(false);
 
+  },[]);
 
-}
 
 
 
-};
 
 
 
 
 
+  const submit = async()=>{
 
 
+    if(
 
+      !form.categoryId ||
 
-useEffect(()=>{
+      !form.limit
 
+    ){
 
-loadData();
+      return;
 
+    }
 
-},[]);
 
 
+    try{
 
 
+      await createBudget({
 
 
+        categoryId:
 
+          form.categoryId,
 
 
-const submit = async()=>{
+        amount:
 
+          Number(form.limit)
 
-if(
 
-!form.categoryId ||
+      });
 
-!form.limit
 
-){
 
-return;
 
-}
 
 
+      setForm({
 
-try{
 
+        categoryId:"",
 
-await createBudget({
+        limit:""
 
-categoryId:
 
-form.categoryId,
+      });
 
-limit:
 
-Number(form.limit)
 
-});
 
+      await loadData();
 
 
 
+    }
 
-setForm({
+    catch(err){
 
-categoryId:"",
 
-limit:""
+      console.error(
 
-});
+        "Creating budget failed",
 
+        err
 
+      );
 
-await loadData();
 
+    }
 
-}
 
-catch(err){
 
+  };
 
-console.error(
 
-"Creating budget failed",
 
-err
 
-);
 
 
-}
 
 
-};
 
+  const remove = async(
 
+    id:string
 
+  )=>{
 
 
+    try{
 
 
+      await deleteBudget(id);
 
 
-const remove = async(
+      await loadData();
 
-id:string
 
-)=>{
 
+    }
 
-try{
+    catch(err){
 
 
-await deleteBudget(id);
+      console.error(
 
+        "Deleting budget failed",
 
-await loadData();
+        err
 
+      );
 
-}
 
-catch(err){
+    }
 
 
-console.error(
 
-"Deleting budget failed",
+  };
 
-err
 
-);
 
 
-}
 
 
-};
 
 
 
+  return (
 
 
+    <PageAnimation>
 
 
+      <div
 
+        className="
+        space-y-8
+        "
 
-return (
+      >
 
-<PageAnimation>
 
 
-<div
 
-className="
-space-y-8
-"
 
->
 
+        <div>
 
 
+          <h1
 
+            className="
+            text-3xl
+            font-bold
+            "
 
-<div>
+          >
 
+            Budgets
 
-<h1
 
-className="
-text-3xl
-font-bold
-"
+          </h1>
 
->
 
-Budgets
 
-</h1>
 
 
+          <p
 
+            className="
+            text-gray-500
+            mt-2
+            "
 
-<p
+          >
 
-className="
-text-gray-500
-mt-2
-"
+            Control your spending and stay within limits.
 
->
 
-Control your spending and stay within limits.
+          </p>
 
-</p>
 
 
-</div>
+        </div>
 
 
 
@@ -414,360 +401,446 @@ Control your spending and stay within limits.
 
 
 
-<Card>
+        <Card>
 
 
-<h2
+          <h2
 
-className="
-text-xl
-font-bold
-mb-5
-"
+            className="
+            text-xl
+            font-bold
+            mb-5
+            "
 
->
+          >
 
-Create Budget
+            Create Budget
 
-</h2>
 
+          </h2>
 
 
 
 
-<div
 
-className="
-grid
-md:grid-cols-3
-gap-4
-"
 
->
 
+          <div
 
+            className="
+            grid
+            md:grid-cols-3
+            gap-4
+            "
 
+          >
 
 
-<Select
 
-value={form.categoryId}
 
-onChange={(e)=>
 
-setForm({
 
-...form,
+            <Select
 
-categoryId:e.target.value
 
-})
+              value={form.categoryId}
 
-}
 
->
+              onChange={(e)=>
 
 
-<option value="">
+                setForm({
 
-Select Category
 
-</option>
+                  ...form,
 
 
+                  categoryId:
 
-{
+                    e.target.value
 
-categories.map(
 
-(category)=>(
+                })
 
 
-<option
+              }
 
-key={category._id}
 
-value={category._id}
+            >
 
->
 
-{category.name}
 
-</option>
+              <option value="">
 
 
-)
+                Select Category
 
-)
 
-}
+              </option>
 
 
 
-</Select>
 
+              {
 
 
+                categories.map(
 
+                  (category)=>(
 
 
+                    <option
 
+                      key={category._id}
 
-<Input
+                      value={category._id}
 
+                    >
 
-placeholder="Monthly limit"
+                      {category.name}
 
 
-type="number"
+                    </option>
 
 
-value={form.limit}
+                  )
 
+                )
 
-onChange={(e)=>
 
-setForm({
+              }
 
-...form,
 
-limit:e.target.value
 
-})
+            </Select>
 
-}
 
 
-/>
 
 
 
 
 
 
+            <Input
 
 
+              placeholder="Monthly limit"
 
-<Button
 
-onClick={submit}
+              type="number"
 
->
 
-Create Budget
+              value={form.limit}
 
-</Button>
 
+              onChange={(e)=>
 
 
+                setForm({
 
 
-</div>
+                  ...form,
 
 
-</Card>
+                  limit:
 
+                    e.target.value
 
 
+                })
 
 
+              }
 
 
+            />
 
 
-{
 
-loading
 
-?
 
-(
 
-<Card>
 
 
-<p>
 
-Loading budgets...
+            <Button
 
-</p>
+              onClick={submit}
 
+            >
 
-</Card>
+              Create Budget
 
-)
 
+            </Button>
 
-:
 
-error
 
-?
 
-(
 
-<Card>
 
+          </div>
 
-<p
 
-className="
-text-red-600
-"
 
->
+        </Card>
 
-{error}
 
-</p>
 
 
-</Card>
 
-)
 
 
-:
 
-(
 
+        {
 
 
-<div
+          loading
 
-className="
-grid
-md:grid-cols-2
-gap-6
-"
 
->
+          ?
 
 
-{
+          (
 
-budgets.length > 0
+            <Card>
 
-?
 
-budgets.map(
+              <p>
 
-(budget)=>(
+                Loading budgets...
 
+              </p>
 
-<BudgetCard
 
-key={budget._id}
+            </Card>
 
-budget={budget}
 
-onDelete={remove}
+          )
 
-/>
 
 
-)
+          :
 
-)
 
 
-:
+          error
 
-(
 
-<Card>
 
+          ?
 
-<div
 
-className="
-text-center
-py-10
-"
 
->
+          (
 
+            <Card>
 
-<div
 
-className="
-text-5xl
-"
+              <p
 
->
+                className="
+                text-red-600
+                "
 
-💰
+              >
 
-</div>
+                {error}
 
 
+              </p>
 
 
-<h3
+            </Card>
 
-className="
-text-xl
-font-bold
-mt-4
-"
 
->
+          )
 
-No budgets yet
 
-</h3>
 
+          :
 
 
 
-<p
 
-className="
-text-gray-500
-mt-2
-"
 
->
+          (
 
-Create your first budget to track spending.
 
-</p>
 
+            <div
 
+              className="
+              grid
+              md:grid-cols-2
+              gap-6
+              "
 
-</div>
+            >
 
 
-</Card>
 
-)
 
-}
 
 
+              {
 
-</div>
 
+                budgets.length > 0
 
 
-)
 
+                ?
 
-}
 
 
+                budgets.map(
 
 
+                  (budget)=>(
 
 
 
+                    <BudgetCard
 
-</div>
 
+                      key={budget._id}
 
-</PageAnimation>
 
-);
+                      budget={budget}
 
+
+                      onDelete={remove}
+
+
+
+                    />
+
+
+
+                  )
+
+
+                )
+
+
+
+                :
+
+
+
+                (
+
+
+                  <Card>
+
+
+
+                    <div
+
+                      className="
+                      text-center
+                      py-10
+                      "
+
+                    >
+
+
+
+                      <div
+
+                        className="
+                        text-5xl
+                        "
+
+                      >
+
+                        💰
+
+
+                      </div>
+
+
+
+
+
+                      <h3
+
+                        className="
+                        text-xl
+                        font-bold
+                        mt-4
+                        "
+
+                      >
+
+                        No budgets yet
+
+
+                      </h3>
+
+
+
+
+
+                      <p
+
+                        className="
+                        text-gray-500
+                        mt-2
+                        "
+
+                      >
+
+                        Create your first budget to track spending.
+
+
+                      </p>
+
+
+
+                    </div>
+
+
+
+                  </Card>
+
+
+                )
+
+
+              }
+
+
+
+
+
+            </div>
+
+
+
+          )
+
+
+
+        }
+
+
+
+
+
+
+
+      </div>
+
+
+
+    </PageAnimation>
+
+
+
+  );
 
 }
