@@ -2,9 +2,7 @@ import { Response } from "express";
 
 
 import {
-
   AuthRequest
-
 } from "../middleware/authMiddleware";
 
 
@@ -28,9 +26,7 @@ export const getDashboardAnalytics = async(
   try {
 
 
-    const userId =
-
-      req.user?._id;
+    const userId = req.user?._id;
 
 
 
@@ -40,13 +36,13 @@ export const getDashboardAnalytics = async(
       return res.status(401).json({
 
         message:
-
-        "Not authenticated"
+          "Not authenticated"
 
       });
 
 
     }
+
 
 
 
@@ -74,7 +70,6 @@ export const getDashboardAnalytics = async(
 
     let income = 0;
 
-
     let expenses = 0;
 
 
@@ -87,9 +82,12 @@ export const getDashboardAnalytics = async(
 
 
 
+
+
     transactions.forEach(
 
       (transaction:any)=>{
+
 
 
         if(transaction.type === "income"){
@@ -104,6 +102,7 @@ export const getDashboardAnalytics = async(
 
 
 
+
         if(transaction.type === "expense"){
 
 
@@ -111,11 +110,7 @@ export const getDashboardAnalytics = async(
 
 
 
-
-
-          const category =
-
-            transaction.categoryId;
+          const category = transaction.categoryId;
 
 
 
@@ -131,11 +126,11 @@ export const getDashboardAnalytics = async(
 
 
                 name:
+                  category.name,
 
-                category.name,
 
-
-                amount:0
+                amount:
+                  0
 
 
               };
@@ -147,20 +142,26 @@ export const getDashboardAnalytics = async(
 
 
 
+
             categoryMap[category.name].amount +=
 
               transaction.amount;
 
 
+
           }
+
 
 
         }
 
 
+
       }
 
+
     );
+
 
 
 
@@ -171,6 +172,8 @@ export const getDashboardAnalytics = async(
     const categoryExpenses =
 
       Object.values(categoryMap);
+
+
 
 
 
@@ -198,13 +201,189 @@ export const getDashboardAnalytics = async(
 
 
 
+
+    const updatedBudgets = await Promise.all(
+
+
+      budgets.map(async (budget:any)=>{
+
+
+
+        const startDate = new Date(
+
+          budget.year,
+
+          budget.month - 1,
+
+          1
+
+        );
+
+
+
+        const endDate = new Date(
+
+          budget.year,
+
+          budget.month,
+
+          1
+
+        );
+
+
+
+
+
+
+
+        const budgetTransactions = await Transaction.find({
+
+
+          userId,
+
+
+          categoryId:
+
+            budget.categoryId._id,
+
+
+          type:
+
+            "expense",
+
+
+
+          date: {
+
+
+            $gte:
+
+              startDate,
+
+
+            $lt:
+
+              endDate
+
+
+          }
+
+
+
+        });
+
+
+
+
+
+
+
+        const spent = budgetTransactions.reduce(
+
+          (
+
+            total:number,
+
+            transaction:any
+
+          )=>
+
+
+            total + transaction.amount,
+
+
+          0
+
+
+        );
+
+
+
+
+
+
+
+
+        const remaining =
+
+          budget.amount - spent;
+
+
+
+
+
+
+
+
+        const percentage =
+
+          budget.amount > 0
+
+          ?
+
+          Math.round(
+
+            (spent / budget.amount) * 100
+
+          )
+
+          :
+
+          0;
+
+
+
+
+
+
+
+
+        return {
+
+
+          ...budget.toObject(),
+
+
+          spent,
+
+
+          remaining,
+
+
+          percentage
+
+
+
+        };
+
+
+
+
+
+      })
+
+
+    );
+
+
+
+
+
+
+
+
+
     return res.status(200).json({
+
 
 
       income,
 
 
+
       expenses,
+
 
 
       savings:
@@ -212,13 +391,19 @@ export const getDashboardAnalytics = async(
         income - expenses,
 
 
+
       categoryExpenses,
 
 
-      budgets
+
+      budgets:
+
+        updatedBudgets
+
 
 
     });
+
 
 
 
@@ -239,13 +424,15 @@ export const getDashboardAnalytics = async(
 
 
 
+
     return res.status(500).json({
 
       message:
 
-      "Analytics failed"
+        "Analytics failed"
 
     });
+
 
 
   }
