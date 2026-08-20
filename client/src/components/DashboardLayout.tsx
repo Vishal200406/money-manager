@@ -32,6 +32,7 @@ from "@/components/ProtectedRoute";
 
 
 
+
 interface Props {
 
 
@@ -39,6 +40,8 @@ children:ReactNode;
 
 
 }
+
+
 
 
 
@@ -75,7 +78,11 @@ bg-gray-50
 
 
 
+{/* Mobile top navigation */}
+
 <MobileHeader />
+
+
 
 
 
@@ -93,7 +100,11 @@ flex
 
 
 
+
+{/* Desktop sidebar */}
+
 <Sidebar />
+
 
 
 
@@ -106,7 +117,9 @@ flex
 className="
 flex-1
 p-4
+pt-20
 md:p-6
+md:pt-6
 pb-24
 md:pb-6
 "
@@ -123,12 +136,16 @@ md:pb-6
 
 
 
+
 </div>
 
 
 
 
 
+
+
+{/* Mobile bottom navigation */}
 
 <MobileNav />
 
