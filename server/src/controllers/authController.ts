@@ -20,16 +20,14 @@ import {
 const cookieOptions = {
   httpOnly: true,
 
-  secure:
-    process.env.NODE_ENV === "production",
+  // Required because frontend and backend are deployed separately on Vercel
+  secure: true,
 
-  sameSite: "lax" as const,
+  // Allows cookies to be sent between different domains
+  sameSite: "none" as const,
 
-  maxAge:
-    7 * 24 * 60 * 60 * 1000,
-
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
-
 
 
 // Register User
