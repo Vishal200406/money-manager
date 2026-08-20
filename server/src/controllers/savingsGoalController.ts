@@ -2,6 +2,10 @@ import {Request, Response} from "express";
 
 import SavingsGoal from "../models/SavingsGoal";
 
+import {
+  createNotification
+} from "../services/notificationService";
+
 
 
 
@@ -32,7 +36,7 @@ userId
 
 
 
-res.json(goals);
+return res.json(goals);
 
 
 
@@ -41,7 +45,7 @@ res.json(goals);
 catch(error){
 
 
-res.status(500).json({
+return res.status(500).json({
 
 message:"Failed loading goals"
 
@@ -93,7 +97,7 @@ deadline:req.body.deadline
 
 
 
-res.status(201).json(goal);
+return res.status(201).json(goal);
 
 
 
@@ -102,7 +106,7 @@ res.status(201).json(goal);
 catch(error){
 
 
-res.status(500).json({
+return res.status(500).json({
 
 message:"Failed creating goal"
 
@@ -144,7 +148,7 @@ userId:(req as any).user.id
 
 
 
-res.json({
+return res.json({
 
 message:"Goal deleted"
 
@@ -156,7 +160,7 @@ message:"Goal deleted"
 catch(error){
 
 
-res.status(500).json({
+return res.status(500).json({
 
 message:"Failed deleting goal"
 
@@ -188,11 +192,17 @@ res:Response
 try{
 
 
+const userId =
+
+(req as any).user.id;
+
+
+
 const goal = await SavingsGoal.findOne({
 
 _id:req.params.id,
 
-userId:(req as any).user.id
+userId
 
 });
 
@@ -220,7 +230,83 @@ await goal.save();
 
 
 
-res.json(goal);
+
+
+
+
+const percentage =
+
+(goal.savedAmount /
+
+goal.targetAmount) * 100;
+
+
+
+
+
+
+
+if(percentage >= 100){
+
+
+await createNotification(
+
+userId,
+
+"Goal Completed",
+
+`You completed your ${goal.name} savings goal.`,
+
+"goal"
+
+);
+
+
+}
+
+else if(percentage >= 75){
+
+
+await createNotification(
+
+userId,
+
+"Savings Goal Progress",
+
+`You reached 75% of your ${goal.name} goal.`,
+
+"goal"
+
+);
+
+
+}
+
+else if(percentage >= 50){
+
+
+await createNotification(
+
+userId,
+
+"Savings Goal Progress",
+
+`You reached 50% of your ${goal.name} goal.`,
+
+"goal"
+
+);
+
+
+}
+
+
+
+
+
+
+
+return res.json(goal);
 
 
 
@@ -229,7 +315,7 @@ res.json(goal);
 catch(error){
 
 
-res.status(500).json({
+return res.status(500).json({
 
 message:"Failed adding money"
 

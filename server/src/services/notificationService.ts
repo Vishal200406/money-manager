@@ -1,38 +1,67 @@
 import Notification from "../models/Notification";
 
 
+
 export const createNotification =
+
 async(
 
-userId:string,
+  userId:string,
 
-title:string,
+  title:string,
 
-message:string,
+  message:string,
 
-type:
-"budget"
-|
-"payment"
-|
-"goal"
-|
-"system"
+  type:
+    | "budget"
+    | "payment"
+    | "goal"
+    | "system"
 
 )=>{
 
 
-await Notification.create({
+  const existingNotification =
 
-userId,
+    await Notification.findOne({
 
-title,
+      userId,
 
-message,
+      title,
 
-type,
+      message,
 
-});
+      read:false
+
+    });
+
+
+
+
+
+  if(existingNotification){
+
+    return;
+
+  }
+
+
+
+
+
+
+  await Notification.create({
+
+    userId,
+
+    title,
+
+    message,
+
+    type,
+
+  });
+
 
 
 };

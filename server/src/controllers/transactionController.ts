@@ -2,9 +2,16 @@ import { Response } from "express";
 
 import Transaction from "../models/Transaction";
 
+import Budget from "../models/Budget";
+
 import {
   AuthRequest
 } from "../middleware/authMiddleware";
+
+import {
+  createNotification
+} from "../services/notificationService";
+
 
 
 // Create transaction
@@ -30,6 +37,7 @@ export const createTransaction = async (
     }
 
 
+
     const transaction =
       await Transaction.create({
 
@@ -38,6 +46,153 @@ export const createTransaction = async (
         ...req.body,
 
       });
+
+
+
+
+
+    // Budget notification check
+    if(transaction.type === "expense"){
+
+
+      const budgets =
+
+        await Budget.find({
+
+          userId,
+
+          categoryId:
+            transaction.categoryId,
+
+        })
+
+        .populate(
+
+          "categoryId",
+
+          "name"
+
+        );
+
+
+
+
+      for(const budget of budgets){
+
+
+        const spentTransactions =
+
+          await Transaction.find({
+
+            userId,
+
+            categoryId:
+              transaction.categoryId,
+
+            type:"expense",
+
+            date:{
+
+              $gte:new Date(
+
+                new Date().getFullYear(),
+
+                new Date().getMonth(),
+
+                1
+
+              )
+
+            }
+
+          });
+
+
+
+
+
+        const spent =
+
+          spentTransactions.reduce(
+
+            (sum,item)=>
+
+              sum + item.amount,
+
+            0
+
+          );
+
+
+
+
+
+        const percentage =
+
+          (spent / budget.amount) * 100;
+
+
+
+
+
+        const categoryName =
+
+          (budget.categoryId as any)?.name
+
+          || "Category";
+
+
+
+
+
+        if(
+          percentage >= 100
+        ){
+
+          await createNotification(
+
+            userId,
+
+            "Budget Exceeded",
+
+            `${categoryName} budget has exceeded its limit.`,
+
+            "budget"
+
+          );
+
+
+        }
+
+        else if(
+
+          percentage >= 80
+
+        ){
+
+          await createNotification(
+
+            userId,
+
+            "Budget Warning",
+
+            `${categoryName} budget is ${Math.round(percentage)}% used.`,
+
+            "budget"
+
+          );
+
+        }
+
+
+      }
+
+
+    }
+
+
+
+
 
 
 
@@ -79,6 +234,8 @@ export const createTransaction = async (
   }
 
 };
+
+
 
 
 
@@ -147,6 +304,8 @@ export const getTransactions = async (
   }
 
 };
+
+
 
 
 
