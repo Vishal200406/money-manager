@@ -1,6 +1,6 @@
 interface Props {
 
-value:number;
+  value:number;
 
 }
 
@@ -8,48 +8,65 @@ value:number;
 
 export default function Progress({
 
-value
+  value
 
 }:Props){
 
 
 
-return (
+  const progressValue = Math.min(
 
-<div
+    Math.max(value,0),
 
-className="
-w-full
-bg-gray-200
-rounded-full
-h-3
-overflow-hidden
-"
+    100
 
->
+  );
 
 
-<div
 
-className="
-bg-primary
-h-full
-rounded-full
-transition-all
-duration-500
-"
-
-style={{
-
-width:`${Math.min(value,100)}%`
-
-}}
-
-/>
+  return (
 
 
-</div>
+    <div
 
-);
+      className="
+      w-full
+      bg-gray-200
+      rounded-full
+      h-3
+      overflow-hidden
+      "
+
+    >
+
+
+
+      <div
+
+
+        className="
+        bg-blue-600
+        h-full
+        rounded-full
+        transition-all
+        duration-500
+        "
+
+        style={{
+
+          width:`${progressValue}%`
+
+        }}
+
+
+      />
+
+
+
+    </div>
+
+
+  );
+
 
 }
