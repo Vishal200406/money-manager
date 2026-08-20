@@ -13,10 +13,9 @@ export default function Progress({
 }:Props){
 
 
-
   const progressValue = Math.min(
 
-    Math.max(value,0),
+    Math.max(value, 0),
 
     100
 
@@ -26,47 +25,43 @@ export default function Progress({
 
   return (
 
-
     <div
 
       className="
       w-full
+      h-3
       bg-gray-200
       rounded-full
-      h-3
       overflow-hidden
       "
 
     >
 
 
-
       <div
-
-
-        className="
-        bg-blue-600
-        h-full
-        rounded-full
-        transition-all
-        duration-500
-        "
 
         style={{
 
-          width:`${progressValue}%`
+          width: `${progressValue}%`,
+
+          backgroundColor: "#2563eb",
+
+          height: "100%",
+
+          transition: "width 500ms ease"
 
         }}
 
 
-      />
+        className="
+        rounded-full
+        "
 
+      />
 
 
     </div>
 
-
   );
-
 
 }
