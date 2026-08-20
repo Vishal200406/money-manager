@@ -62,7 +62,7 @@ font-bold
 
 >
 
-{payment.name}
+{payment.name || "Recurring Payment"}
 
 </h3>
 
@@ -94,6 +94,7 @@ payment.categoryId?.name ||
 
 
 
+
 <button
 
 onClick={()=>onDelete(payment._id)}
@@ -113,6 +114,8 @@ Delete
 
 
 </div>
+
+
 
 
 
@@ -178,6 +181,7 @@ payment.frequency
 
 
 
+
 <div>
 
 
@@ -206,13 +210,21 @@ text-lg
 
 {
 
+payment.nextDate
+
+?
+
 new Date(
 
-payment.nextPayment
+payment.nextDate
 
 )
 
 .toLocaleDateString()
+
+:
+
+"Not set"
 
 }
 
@@ -224,6 +236,8 @@ payment.nextPayment
 
 
 </div>
+
+
 
 
 
